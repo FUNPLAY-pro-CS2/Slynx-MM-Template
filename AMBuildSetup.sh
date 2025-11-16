@@ -9,6 +9,7 @@ VDF=$(ls configs/addons/metamod/*.vdf)
 ALIAS=$(grep -Po '"alias"\s*"\K[^"]+' "$VDF")
 FILE=$(grep -Po '"file"\s*"\K[^"]+' "$VDF")
 NAME=$(basename "$FILE")
+export NAME
 
 echo "Alias: $ALIAS"
 echo "Path: $FILE"
