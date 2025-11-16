@@ -15,7 +15,7 @@
 #include "tier0/memdbgon.h"
 #include "gamedata.h"
 
-namespace Template {
+namespace TemplatePlugin {
     struct EntityIOConnectionDesc_t
     {
         string_t m_targetDesc;

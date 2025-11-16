@@ -8,7 +8,7 @@
 #include "CBaseModelEntity.h"
 #include "globaltypes.h"
 
-namespace Template {
+namespace TemplatePlugin {
     class CC4
     {
     public:

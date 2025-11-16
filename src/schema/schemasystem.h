@@ -21,7 +21,7 @@
 #include "stdint.h"
 #undef schema
 
-namespace Template {
+namespace TemplatePlugin {
     struct SchemaKey {
         int32 offset;
         bool networked;

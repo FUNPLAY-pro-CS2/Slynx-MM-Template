@@ -21,7 +21,7 @@
 #define MODULE_EXT ".so"
 #endif
 
-namespace Template {
+namespace TemplatePlugin {
     using SchemaKeyValueMap_t = CUtlMap<uint32_t, SchemaKey>;
     using SchemaTableMap_t = CUtlMap<uint32_t, SchemaKeyValueMap_t*>;
 

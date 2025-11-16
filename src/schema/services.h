@@ -30,7 +30,7 @@
 #define AMMO_OFFSET_MOLOTOV 16
 #define AMMO_OFFSET_DECOY 17
 
-namespace Template {
+namespace TemplatePlugin {
     class CCSPlayerPawn;
     class CCSPlayerController;
     extern bool g_bAwsChangingTeam;

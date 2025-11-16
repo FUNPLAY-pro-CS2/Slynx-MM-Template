@@ -7,7 +7,7 @@
 #include <string>
 #include "schema/CCSPlayerController.h"
 
-namespace Template {
+namespace TemplatePlugin {
     enum class EntityType {
         None = 0,
     };

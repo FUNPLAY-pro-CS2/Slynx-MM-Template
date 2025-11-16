@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include "schema/CCSPlayerController.h"
 
-namespace Template {
+namespace TemplatePlugin {
     struct PlayerData {
     };
 

@@ -35,7 +35,7 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   print(f'Setting version to "{version}"')
 
-  binary.compiler.defines += ['TEMPLATE_VERSION="%s"' % version]
+  binary.compiler.defines += ['TEMPLATEPLUGIN_VERSION="%s"' % version]
 
   binary.compiler.cxxincludes += [
       os.path.join(projectPath, 'src'),

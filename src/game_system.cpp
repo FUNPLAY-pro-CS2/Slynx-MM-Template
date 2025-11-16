@@ -19,12 +19,12 @@ IEntityResourceManifest* m_exportResourceManifest = nullptr;
 // This mess is needed to get the pointer to sm_pFirst so we can insert game systems
 bool InitGameSystems()
 {
-    DynLibUtils::CModule libserver(Template::shared::g_pSource2Server);
+    DynLibUtils::CModule libserver(TemplatePlugin::shared::g_pSource2Server);
 
-    auto result = libserver.FindPattern(Template::gamedata::signatures::IGameSystem_InitAllSystems_pFirst);
+    auto result = libserver.FindPattern(TemplatePlugin::gamedata::signatures::IGameSystem_InitAllSystems_pFirst);
     if (!result)
     {
-        META_LOG(&Template::g_Template, "[Template] <<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");
+        META_LOG(&TemplatePlugin::g_Template, "[Template] <<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");
         return false;
     }
 

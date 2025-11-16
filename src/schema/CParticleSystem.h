@@ -6,7 +6,7 @@
 
 #include "CBaseModelEntity.h"
 
-namespace Template {
+namespace TemplatePlugin {
     class CParticleSystem : public CBaseModelEntity
     {
     public:

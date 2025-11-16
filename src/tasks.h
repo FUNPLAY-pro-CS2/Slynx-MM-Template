@@ -6,7 +6,7 @@
 
 #include <functional>
 
-namespace Template {
+namespace TemplatePlugin {
     using TimerCallback = std::function<void()>;
 
     enum TimerFlags {

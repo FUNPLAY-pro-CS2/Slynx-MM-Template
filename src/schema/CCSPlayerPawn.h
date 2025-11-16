@@ -8,7 +8,7 @@
 #include "services.h"
 #include "CCSWeaponBase.h"
 
-namespace Template {
+namespace TemplatePlugin {
 	enum CSPlayerState
 	{
 		STATE_ACTIVE = 0x0,

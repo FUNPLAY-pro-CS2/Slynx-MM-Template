@@ -7,7 +7,7 @@
 #include "CBaseModelEntity.h"
 #include "services.h"
 
-namespace Template {
+namespace TemplatePlugin {
     class CBasePlayerController;
 
     class CBasePlayerPawn : public CBaseModelEntity

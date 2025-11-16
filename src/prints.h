@@ -7,7 +7,7 @@
 #include <vector>
 #include "schema/CCSPlayerController.h"
 
-namespace Template::Prints
+namespace TemplatePlugin::Prints
 {
     enum class HudDestination : int
     {

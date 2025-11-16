@@ -10,7 +10,7 @@
 #include "usermessages.pb.h"
 #include "tier0/memdbgon.h"
 
-namespace Template::Prints
+namespace TemplatePlugin::Prints
 {
     std::string ReplaceColorTags(const std::string& input)
     {

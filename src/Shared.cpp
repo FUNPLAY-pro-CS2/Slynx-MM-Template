@@ -7,7 +7,7 @@
 #include <iserver.h>
 #include <schemasystem.h>
 
-namespace Template::shared
+namespace TemplatePlugin::shared
 {
     ICvar* g_pCVar = nullptr;
     IServerGameDLL* g_pServer = nullptr;

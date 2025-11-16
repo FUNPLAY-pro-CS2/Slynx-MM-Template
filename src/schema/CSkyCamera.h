@@ -7,7 +7,7 @@
 #include "CBaseModelEntity.h"
 #include "globaltypes.h"
 
-namespace Template {
+namespace TemplatePlugin {
     class CSkyCamera : public CBaseEntity
     {
     public:

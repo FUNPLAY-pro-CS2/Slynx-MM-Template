@@ -8,7 +8,7 @@
 #include <string>
 #include "Shared.h"
 
-namespace Template::Paths {
+namespace TemplatePlugin::Paths {
     static std::string gameDirectory;
 
     inline std::string GameDirectory() {
@@ -26,4 +26,4 @@ namespace Template::Paths {
     inline std::string ServerPath() { return GameDirectory() + "/bin/linuxsteamrt64/libserver.so"; }
     inline std::string SchemaSystemPath() { return GameDirectory() + "../bin/linuxsteamrt64/libschemasystem.so"; }
     inline std::string VScriptPath() { return GameDirectory() + "../bin/linuxsteamrt64/libvscript.so"; }
-} // namespace Template::Paths
+} // namespace TemplatePlugin::Paths

@@ -5,9 +5,9 @@
 #include <ISmmPlugin.h>
 #include "entitysystem.h"
 
-namespace Template
+namespace TemplatePlugin
 {
-    class Template : public ISmmPlugin, public IMetamodListener
+    class TemplatePlugin : public ISmmPlugin, public IMetamodListener
     {
         void Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick);
         void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*);
@@ -26,7 +26,7 @@ namespace Template
         const char *GetLogTag() override;
     };
 
-    extern Template g_Template;
+    extern TemplatePlugin g_Template;
 
     enum class HookMode
     {

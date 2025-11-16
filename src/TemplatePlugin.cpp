@@ -19,7 +19,7 @@
 #include "prints.h"
 #include "tasks.h"
 
-PLUGIN_EXPOSE(Template, Template::g_Template);
+PLUGIN_EXPOSE(Template, TemplatePlugin::g_Template);
 
 CGameEntitySystem* GameEntitySystem()
 {
@@ -35,9 +35,9 @@ class GameSessionConfiguration_t
 {
 };
 
-namespace Template
+namespace TemplatePlugin
 {
-    Template g_Template;
+    TemplatePlugin g_Template;
     CEntityListener g_EntityListener;
 
     SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
@@ -48,7 +48,7 @@ namespace Template
 
     int g_iLoadEventsFromFileId = -1;
 
-    bool Template::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+    bool TemplatePlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
     {
         PLUGIN_SAVEVARS();
 
@@ -84,13 +84,13 @@ namespace Template
         g_SMAPI->AddListener(this, this);
 
         SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                            &Template::Hook_GameFrame, false);
+                            &TemplatePlugin::Hook_GameFrame, false);
         SH_ADD_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                    SH_MEMBER(this, &Template::Hook_StartupServer), true);
+                    SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
         auto pCGameEventManagerVTable = DynLibUtils::CModule(shared::g_pServer).
                                         GetVirtualTableByName("CGameEventManager").RCast<IGameEventManager2*>();
         g_iLoadEventsFromFileId = SH_ADD_DVPHOOK(IGameEventManager2, LoadEventsFromFile, pCGameEventManagerVTable,
-                                                 SH_MEMBER(this, &Template::Hook_LoadEventsFromFile), false);
+                                                 SH_MEMBER(this, &TemplatePlugin::Hook_LoadEventsFromFile), false);
 
         g_pCVar = shared::g_pCVar;
         ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
@@ -99,12 +99,12 @@ namespace Template
         return true;
     }
 
-    bool Template::Unload(char* error, size_t maxlen)
+    bool TemplatePlugin::Unload(char* error, size_t maxlen)
     {
         SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                               &Template::Hook_GameFrame, false);
+                               &TemplatePlugin::Hook_GameFrame, false);
         SH_REMOVE_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                       SH_MEMBER(this, &Template::Hook_StartupServer), true);
+                       SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
         SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
 
         ShutdownHooks();
@@ -117,18 +117,18 @@ namespace Template
         return true;
     }
 
-    void Template::OnLevelShutdown()
+    void TemplatePlugin::OnLevelShutdown()
     {
         Tasks::RemoveMapChangeTimers();
     }
 
-    void Template::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
+    void TemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
     {
         Tasks::Tick();
     }
 
     bool done = false;
-    void Template::Hook_StartupServer(const GameSessionConfiguration_t& config,
+    void TemplatePlugin::Hook_StartupServer(const GameSessionConfiguration_t& config,
                                       ISource2WorldSession*, const char*)
     {
         if (!done)
@@ -140,7 +140,7 @@ namespace Template
         }
     }
 
-    int Template::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)
+    int TemplatePlugin::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)
     {
         ExecuteOnce(shared::g_pGameEventManager = META_IFACEPTR(IGameEventManager2));
         RETURN_META_VALUE(MRES_IGNORED, 0);
@@ -287,12 +287,12 @@ namespace Template
         auto* baseEntity = static_cast<CCSWeaponBase*>(pEntity);
     }
 
-    const char* Template::GetAuthor() { return "Slynx"; }
-    const char* Template::GetName() { return "Template"; }
-    const char* Template::GetDescription() { return "Template Metamod plugin for CS2 servers."; }
-    const char* Template::GetURL() { return "https://slynxdev.cz"; }
-    const char* Template::GetLicense() { return "GPLv3"; }
-    const char* Template::GetVersion() { return TEMPLATE_VERSION; }
-    const char* Template::GetDate() { return __DATE__; }
-    const char* Template::GetLogTag() { return "Template"; }
+    const char* TemplatePlugin::GetAuthor() { return "Slynx"; }
+    const char* TemplatePlugin::GetName() { return "Template"; }
+    const char* TemplatePlugin::GetDescription() { return "Template Metamod plugin for CS2 servers."; }
+    const char* TemplatePlugin::GetURL() { return "https://slynxdev.cz"; }
+    const char* TemplatePlugin::GetLicense() { return "GPLv3"; }
+    const char* TemplatePlugin::GetVersion() { return TEMPLATEPLUGIN_VERSION; }
+    const char* TemplatePlugin::GetDate() { return __DATE__; }
+    const char* TemplatePlugin::GetLogTag() { return "Template"; }
 }

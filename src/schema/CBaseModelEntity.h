@@ -7,7 +7,7 @@
 #include "globaltypes.h"
 #include "dynlibutils/module.h"
 
-namespace Template {
+namespace TemplatePlugin {
     class CBaseModelEntity : public CBaseEntity
     {
     public:

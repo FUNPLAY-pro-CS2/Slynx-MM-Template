@@ -16,8 +16,8 @@ echo "Name: $NAME"
 
 # Get version from git or use default
 VERSION=$(git describe --tags --long 2>/dev/null || echo "1.0-dev")
-export TEMPLATE_VERSION="$VERSION"
-echo "Setting version to \"$TEMPLATE_VERSION\""
+export TEMPLATEPLUGIN_VERSION="$VERSION"
+echo "Setting version to \"$TEMPLATEPLUGIN_VERSION\""
 
 mkdir -p build
 cd build

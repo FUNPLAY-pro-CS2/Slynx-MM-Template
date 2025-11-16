@@ -13,7 +13,7 @@
 
 class CGameEntitySystem;
 
-namespace Template::shared
+namespace TemplatePlugin::shared
 {
     extern ICvar* g_pCVar;
     extern IServerGameDLL* g_pServer;

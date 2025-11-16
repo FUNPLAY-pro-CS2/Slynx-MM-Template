@@ -7,7 +7,7 @@
 #include "CBaseEntity.h"
 #include "CCSPlayerPawn.h"
 
-namespace Template {
+namespace TemplatePlugin {
     enum class PlayerConnectedState : uint32_t
     {
         PlayerNeverConnected = 0xFFFFFFFF,

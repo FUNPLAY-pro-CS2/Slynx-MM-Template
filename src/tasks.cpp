@@ -8,7 +8,7 @@
 #include <mutex>
 #include <queue>
 
-namespace Template {
+namespace TemplatePlugin {
     namespace {
         double universal_time = 0.0;
         double last_tick_time = 0.0;

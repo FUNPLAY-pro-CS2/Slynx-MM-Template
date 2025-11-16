@@ -9,7 +9,7 @@
 #include <vector>
 #include <eiface.h>
 
-namespace Template::gamedata
+namespace TemplatePlugin::gamedata
 {
     namespace signatures
     {

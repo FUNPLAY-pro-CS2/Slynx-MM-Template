@@ -8,7 +8,7 @@
 #include "services.h"
 #include "Shared.h"
 
-namespace Template {
+namespace TemplatePlugin {
     extern CServerSideClient *GetClientBySlot(CPlayerSlot slot);
 
     class CCSPlayerController : public CBasePlayerController {

@@ -17,7 +17,7 @@
 #include <network_connection.pb.h>
 #include <netmessages.pb.h>
 
-namespace Template {
+namespace TemplatePlugin {
     class INetMessage;
     class CNetworkGameServerBase;
     class CNetworkGameServer;

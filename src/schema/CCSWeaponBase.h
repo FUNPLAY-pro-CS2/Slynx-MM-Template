@@ -7,7 +7,7 @@
 #include "CBaseEntity.h"
 #include "virtual.h"
 
-namespace Template {
+namespace TemplatePlugin {
 	enum gear_slot_t : uint32_t
 	{
 		GEAR_SLOT_INVALID = 0xffffffff,

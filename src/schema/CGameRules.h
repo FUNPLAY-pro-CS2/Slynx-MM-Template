@@ -6,7 +6,7 @@
 #include <platform.h>
 #include "CBaseEntity.h"
 
-namespace Template {
+namespace TemplatePlugin {
     enum class RoundEndReason : uint32_t
     {
         Unknown = 0x0u,

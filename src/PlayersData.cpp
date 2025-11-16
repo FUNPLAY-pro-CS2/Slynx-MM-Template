@@ -4,7 +4,7 @@
 //
 #include "PlayersData.h"
 
-namespace Template {
+namespace TemplatePlugin {
     bool PlayerDataHandler::Add(uint64_t steamid, const PlayerData &data) {
         if (steamid == 0 || players_.contains(steamid)) return false;
         players_[steamid] = data;
