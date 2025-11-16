@@ -1,0 +1,27 @@
+import os
+import shutil
+
+builder.SetBuildFolder('package')
+
+projectPath = os.path.join(builder.sourcePath, '../')
+pluginName = MMSPlugin.plugin_name
+
+pluginFolder = builder.AddFolder(os.path.join('addons', pluginName))
+metamodFolder = builder.AddFolder(os.path.join('addons', 'metamod'))
+
+for task in MMSPlugin.binaries:
+    builder.AddCopy(task.binary, pluginFolder)
+
+configs_src = os.path.join(projectPath, "configs")
+
+for root, dirs, files in os.walk(configs_src):
+    rel = os.path.relpath(root, configs_src)
+
+    # root folder "configs" collapses into package/
+    if rel == ".":
+        folder = builder  # root of package/
+    else:
+        folder = builder.AddFolder(rel)
+
+    for f in files:
+        builder.AddCopy(os.path.join(root, f), folder)

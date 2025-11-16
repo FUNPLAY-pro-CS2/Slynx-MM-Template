@@ -1,0 +1,94 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python: 
+import os
+import subprocess
+
+class NoOpBuilder(object):
+  def __init__(self, source, target):
+    self.source = source
+    self.target = target
+
+  def build(self, out):
+    # No command, no action — just declare outputs.
+    return self.builder.Run("true")
+
+# Here only one sdk should be available to generate only one executable in the end,
+# as multi-sdk loading isn't supported out of the box by metamod, and would require specifying the full path in the vdf
+# which in the end would ruin the multi-platform (unix, win etc) loading by metamod as it won't be able to append platform specific extension
+# so just fall back to the single binary.
+# Multi-sdk solutions should be manually loaded with a custom plugin loader (examples being sourcemod, stripper:source)
+for sdk_target in MMSPlugin.sdk_targets:
+  sdk = sdk_target.sdk
+  cxx = sdk_target.cxx
+  cxx.cxxflags += ['-Wno-invalid-offsetof']
+
+  projectPath = os.path.join(builder.sourcePath, '../')
+  binary = MMSPlugin.HL2Library(builder, cxx, MMSPlugin.plugin_name, sdk)
+
+  try:
+      version = subprocess.check_output(
+          ['git', 'describe', '--tags', '--long'],
+          cwd=projectPath
+      ).decode('ascii').strip()
+  except subprocess.SubprocessError:
+      version = "1.3-dev"
+      print("git describe failed as there are no tags")
+
+  print(f'Setting version to "{version}"')
+
+  binary.compiler.defines += ['TEMPLATE_VERSION="%s"' % version]
+
+  binary.compiler.cxxincludes += [
+      os.path.join(projectPath, 'src'),
+      os.path.join(projectPath, 'vendor')
+  ]
+
+  src_dir = os.path.join(projectPath, "src")
+  for root, dirs, files in os.walk(src_dir):
+      for f in files:
+          if f.endswith(('.cpp', '.cc', '.cxx', '.c')):
+              binary.sources += [os.path.join(root, f)]
+
+  if cxx.target.arch == 'x86':
+    binary.sources += ['sourcehook/sourcehook_hookmangen.cpp']
+
+  # ---------------------------------------------------
+  # PROTOBUF GENERATION (same system as CS2Fixes)
+  # ---------------------------------------------------
+  proto_sources = [
+    os.path.join(sdk['path'], 'common', 'network_connection.proto'),
+    os.path.join(sdk['path'], 'common', 'netmessages.proto'),
+    os.path.join(sdk['path'], 'common', 'networkbasetypes.proto'),
+    os.path.join(sdk['path'], 'common', 'engine_gcmessages.proto'),
+    os.path.join(sdk['path'], 'gcsdk', 'steammessages.proto'),
+    os.path.join(sdk['path'], 'gcsdk', 'gcsdk_gcmessages.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'gameevents.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'te.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'usercmd.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'usermessages.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'cs', 'cs_gameevents.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'cs', 'cs_usercmd.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'cstrike15', 'cstrike15_gcmessages.proto'),
+    os.path.join(sdk['path'], 'game', 'shared', 'cstrike15', 'cstrike15_usermessages.proto'),
+    os.path.join(sdk['path'], 'networksystem', 'networksystem_protomessages.proto'),
+  ]
+
+  protoc_builder = builder.tools.Protoc(
+    protoc = sdk_target.protoc,
+    sources = proto_sources
+  )
+
+  # Include dirs for protoc
+  protoc_builder.protoc.includes += [
+    os.path.join(sdk['path'], 'common'),
+    os.path.join(sdk['path'], 'game', 'shared'),
+    os.path.join(sdk['path'], 'game'),
+    os.path.join(sdk['path'], 'gcsdk'),
+    os.path.join(sdk['path'], 'csgo', 'proto'),
+  ]
+
+  # Add generated .pb.cc into sources
+  binary.custom = [protoc_builder]
+
+  # continue build
+  nodes = builder.Add(binary)
+  MMSPlugin.binaries += [nodes]

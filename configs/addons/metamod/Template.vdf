@@ -1,0 +1,5 @@
+"Metamod Plugin"
+{
+	"alias"	"Template"
+	"file"	"addons/Template/bin/linuxsteamrt64/Template"
+}
