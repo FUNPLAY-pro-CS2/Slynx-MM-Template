@@ -1,5 +1,4 @@
 build/
 dockerbuild/
-vendor/
 compile_commands.json
 .idea/
