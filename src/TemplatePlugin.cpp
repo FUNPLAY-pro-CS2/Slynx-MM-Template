@@ -1,4 +1,4 @@
-#include "Template.h"
+#include "TemplatePlugin.h"
 #include "path.h"
 #include "Shared.h"
 #include "dynlibutils/module.h"

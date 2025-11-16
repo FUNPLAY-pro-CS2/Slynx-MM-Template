@@ -82,8 +82,7 @@ for sdk_target in MMSPlugin.sdk_targets:
     os.path.join(sdk['path'], 'common'),
     os.path.join(sdk['path'], 'game', 'shared'),
     os.path.join(sdk['path'], 'game'),
-    os.path.join(sdk['path'], 'gcsdk'),
-    os.path.join(sdk['path'], 'csgo', 'proto'),
+    os.path.join(sdk['path'], 'gcsdk')
   ]
 
   # Add generated .pb.cc into sources
