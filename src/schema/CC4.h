@@ -4,9 +4,8 @@
 //
 #pragma once
 #include <entity2/entityidentity.h>
+#include "CGameRules.h"
 #include "schemasystem.h"
-#include "CBaseModelEntity.h"
-#include "globaltypes.h"
 
 namespace TemplatePlugin {
     class CC4

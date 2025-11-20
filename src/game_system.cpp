@@ -4,8 +4,6 @@
 //
 #include "Shared.h"
 #include "game_system.h"
-
-#include <gamedata.h>
 #include <tier0/vprof.h>
 #include "dynlibutils/module.h"
 
@@ -21,7 +19,7 @@ bool InitGameSystems()
 {
     DynLibUtils::CModule libserver(TemplatePlugin::shared::g_pSource2Server);
 
-    auto result = libserver.FindPattern(TemplatePlugin::gamedata::signatures::IGameSystem_InitAllSystems_pFirst);
+    auto result = libserver.FindPattern(TemplatePlugin::shared::g_pGameConfig->GetSignature("IGameSystem_InitAllSystems_pFirst"));
     if (!result)
     {
         META_LOG(&TemplatePlugin::g_Template, "[Template] <<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");

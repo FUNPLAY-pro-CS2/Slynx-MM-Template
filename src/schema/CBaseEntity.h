@@ -3,56 +3,70 @@
 // Copyright (c) 2025 slynxcz. All rights reserved.
 //
 #pragma once
-#include <ehandle.h>
 #include <entitysystem.h>
 #include <entity2/entityidentity.h>
 #include "mathlib/vector.h"
 #include "schemasystem.h"
 #include "ccollisionproperty.h"
 #include "globaltypes.h"
-#include "Shared.h"
+#include "ctakedamageinfo.h"
 #include "virtual.h"
+#include "dynlibutils/module.h"
 #include "tier0/memdbgon.h"
-#include "gamedata.h"
+#include "Shared.h"
 
-namespace TemplatePlugin {
-    struct EntityIOConnectionDesc_t
-    {
-        string_t m_targetDesc;
-        string_t m_targetInput;
-        string_t m_valueOverride;
-        CEntityHandle m_hTarget;
-        EntityIOTargetType_t m_nTargetType;
-        int32 m_nTimesToFire;
-        float m_flDelay;
-    };
+namespace
+TemplatePlugin
+{
+    using UTIL_CreateEntityByName_t = CEntityInstance* (*)(const char* /*name*/, int /*forceEdictIndex*/);
+    inline UTIL_CreateEntityByName_t g_UTIL_CreateEntityByName = nullptr;
 
-    struct EntityIOConnection_t : EntityIOConnectionDesc_t
+    template <typename T>
+    inline T* UTIL_CreateEntityByName(const char* name)
     {
-        bool m_bMarkedForRemoval;
-        EntityIOConnection_t* m_pNext;
-    };
+        if (!g_UTIL_CreateEntityByName)
+        {
+            UTIL_CreateEntityByName_t addr = DynLibUtils::CModule(shared::g_pServer).FindPattern(
+                        shared::g_pGameConfig->GetSignature("UTIL_CreateEntityByName")).RCast<UTIL_CreateEntityByName_t>();
 
-    struct EntityIOOutputDesc_t
-    {
-        const char* m_pName;
-        uint32 m_nFlags;
-        uint32 m_nOutputOffset;
-    };
+            if (!addr)
+                return nullptr;
 
-    class CEntityIOOutput
+            g_UTIL_CreateEntityByName = addr;
+        }
+        return reinterpret_cast<T*>(g_UTIL_CreateEntityByName(name, -1));
+    }
+
+    template <typename T>
+    inline std::vector<T*> UTIL_FindAllEntitiesByDesignerName(const char* designerName)
     {
-    public:
-        void* vtable;
-        EntityIOConnection_t* m_pConnections;
-        EntityIOOutputDesc_t* m_pDesc;
-    };
-    
-    inline CEntityInstance *UTIL_GetEntityByIndex(int index) {
+        std::vector<T*> results;
+
+        if (!designerName || !shared::g_pEntitySystem)
+            return results;
+
+        auto* it = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
+        for (; it; it = it->m_pNext)
+        {
+            if (!it->m_pInstance) continue;
+
+            const char* dn = it->m_designerName.String();
+            if (!dn) continue;
+
+            if (std::strcmp(dn, designerName) == 0)
+                results.push_back((T*)it->m_pInstance);
+        }
+
+        return results;
+    }
+
+    inline CEntityInstance* UTIL_GetEntityByIndex(int index)
+    {
         if (!shared::g_pEntitySystem) return nullptr;
-        CEntityIdentity *pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
+        CEntityIdentity* pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
 
-        for (; pEntity; pEntity = pEntity->m_pNext) {
+        for (; pEntity; pEntity = pEntity->m_pNext)
+        {
             if (pEntity->m_EHandle.GetEntryIndex() == index)
                 return pEntity->m_pInstance;
         };
@@ -60,11 +74,13 @@ namespace TemplatePlugin {
         return nullptr;
     }
 
-    inline CEntityInstance *UTIL_FindEntityByClassname(const char *name) {
+    inline CEntityInstance* UTIL_FindEntityByClassname(const char* name)
+    {
         if (!shared::g_pEntitySystem) return nullptr;
-        CEntityIdentity *pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
+        CEntityIdentity* pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
 
-        for (; pEntity; pEntity = pEntity->m_pNext) {
+        for (; pEntity; pEntity = pEntity->m_pNext)
+        {
             if (!strcmp(pEntity->m_designerName.String(), name))
                 return pEntity->m_pInstance;
         };
@@ -72,11 +88,13 @@ namespace TemplatePlugin {
         return nullptr;
     }
 
-    inline CEntityInstance *UTIL_FindEntityByEHandle(CEntityInstance *pFind) {
+    inline CEntityInstance* UTIL_FindEntityByEHandle(CEntityInstance* pFind)
+    {
         if (!shared::g_pEntitySystem) return nullptr;
-        CEntityIdentity *pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
+        CEntityIdentity* pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
 
-        for (; pEntity; pEntity = pEntity->m_pNext) {
+        for (; pEntity; pEntity = pEntity->m_pNext)
+        {
             if (pEntity->GetRefEHandle() == pFind)
                 return pEntity->m_pInstance;
         };
@@ -84,39 +102,20 @@ namespace TemplatePlugin {
         return nullptr;
     }
 
-    inline std::vector<CEntityInstance *> UTIL_FindEntityByClassnameAll(const char *name) {
-        if (!shared::g_pEntitySystem) return {};
-        CEntityIdentity *pEntity = shared::g_pEntitySystem->m_EntityList.m_pFirstActiveEntity;
-        std::vector<CEntityInstance *> entities;
-        for (; pEntity; pEntity = pEntity->m_pNext) {
-            if (!strcmp(pEntity->m_designerName.String(), name))
-                entities.push_back(pEntity->m_pInstance);
-        };
-        return entities;
-    }
+    typedef void (*CEntityInstance_AcceptInput_t)(CEntityInstance* pThis, const char* pInputName,
+                                                  CEntityInstance* pActivator, CEntityInstance* pCaller,
+                                                  const variant_t& pValue, int nOutputID, void* pUnk1);
+    inline CEntityInstance_AcceptInput_t g_CEntityInstance_AcceptInput = nullptr;
 
-    inline void (FASTCALL*CEntityInstance_AcceptInput)(CEntityInstance *pThis, const char *pInputName,
-                                                       CEntityInstance *pActivator, CEntityInstance *pCaller,
-                                                       variant_t *value, int nOutputID, void *);
+    typedef void (*CEntitySystem_AddEntityIOEvent_t)(CEntitySystem* pEntitySystem, CEntityInstance* pThis,
+                                                     const char* pInputName, CEntityInstance* pActivator,
+                                                     CEntityInstance* pCaller, const variant_t& pValue, float delay,
+                                                     int nOutputID, void* pUnk1, void* pUnk2);
+    inline CEntitySystem_AddEntityIOEvent_t g_CEntitySystem_AddEntityIOEvent = nullptr;
 
-    inline void (FASTCALL*CEntitySystem_AddEntityIOEvent)(CEntitySystem *pEntitySystem, CEntityInstance *pTarget,
-                                                          const char *pszInput,
-                                                          CEntityInstance *pActivator, CEntityInstance *pCaller,
-                                                          variant_t *value, float flDelay, int outputID, void *,
-                                                          void *);
 
-    inline void UTIL_AddEntityIOEvent(CEntityInstance *pTarget, const char *pszInput,
-                                      CEntityInstance *pActivator, CEntityInstance *pCaller, variant_t value,
-                                      float flDelay) {
-        if (!CEntitySystem_AddEntityIOEvent) {
-            return;
-        }
-
-        CEntitySystem_AddEntityIOEvent(shared::g_pEntitySystem, pTarget, pszInput, pActivator, pCaller, &value, flDelay,
-                                       0, nullptr, nullptr);
-    }
-
-    class CGameSceneNode {
+    class CGameSceneNode
+    {
     public:
         DECLARE_SCHEMA_CLASS(CGameSceneNode)
 
@@ -140,7 +139,8 @@ namespace TemplatePlugin {
 
         SCHEMA_FIELD(Vector, m_vRenderOrigin);
 
-        matrix3x4_t EntityToWorldTransform() {
+        matrix3x4_t EntityToWorldTransform()
+        {
             matrix3x4_t mat;
 
             QAngle angles = this->m_angAbsRotation();
@@ -173,14 +173,16 @@ namespace TemplatePlugin {
         }
     };
 
-    class CBodyComponent {
+    class CBodyComponent
+    {
     public:
         DECLARE_SCHEMA_CLASS(CBodyComponent)
 
         SCHEMA_FIELD(CGameSceneNode *, m_pSceneNode);
     };
 
-    class CModelState {
+    class CModelState
+    {
     public:
         DECLARE_SCHEMA_CLASS(CModelState)
 
@@ -189,23 +191,28 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(uint64, m_MeshGroupMask)
     };
 
-    class CSkeletonInstance : public CGameSceneNode {
+    class CSkeletonInstance : public CGameSceneNode
+    {
     public:
         DECLARE_SCHEMA_CLASS(CSkeletonInstance)
 
         SCHEMA_FIELD(CModelState, m_modelState)
     };
 
-    class CEntitySubclassVDataBase {
+    class CEntitySubclassVDataBase
+    {
     public:
         DECLARE_SCHEMA_CLASS(CEntitySubclassVDataBase)
     };
 
-    class CBaseEntity : public CEntityInstance {
+    class CBaseEntity : public CEntityInstance
+    {
     public:
         DECLARE_SCHEMA_CLASS(CBaseEntity)
 
         SCHEMA_FIELD(float32, m_flSimulationTime)
+
+        SCHEMA_FIELD(float, m_flCreateTime);
 
         SCHEMA_FIELD(CBodyComponent *, m_CBodyComponent)
 
@@ -214,6 +221,8 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(float, m_lastNetworkChange)
 
         SCHEMA_FIELD_POINTER(CNetworkTransmitComponent, m_NetworkTransmitComponent)
+
+        SCHEMA_FIELD_POINTER(char, m_iszDamageFilterName);
 
         SCHEMA_FIELD(int, m_iHealth)
 
@@ -267,6 +276,8 @@ namespace TemplatePlugin {
 
         SCHEMA_FIELD(CHandle<CBaseEntity>, m_hOwnerEntity)
 
+        SCHEMA_FIELD(CHandle<CBaseEntity>, m_hGroundEntity);
+
         SCHEMA_FIELD(uint32, m_fEffects)
 
         SCHEMA_FIELD(QAngle, m_vecAngVelocity)
@@ -274,73 +285,109 @@ namespace TemplatePlugin {
         // ---------------------------
         // Flag helpers
         // ---------------------------
-        void SetFlags(uint32_t mask) {
-            auto flags = m_fFlags();
-            if (flags) flags = mask;
+        void SetFlags(uint32_t mask)
+        {
+            auto& flags = m_fFlags();
+            flags = mask;
         }
 
-        void AddFlags(uint32_t mask) {
-            auto flags = m_fFlags();
-            if (flags) flags |= mask;
+        void AddFlags(uint32_t mask)
+        {
+            auto& flags = m_fFlags();
+            flags |= mask;
         }
 
-        void ClearFlags(uint32_t mask) {
-            auto flags = m_fFlags();
-            if (flags) flags &= ~mask;
+        void ClearFlags(uint32_t mask)
+        {
+            auto& flags = m_fFlags();
+            flags &= ~mask;
         }
 
-        bool HasFlags(uint32_t mask) {
-            auto flags = m_fFlags();
-            return flags && ((flags & mask) == mask);
+        bool HasFlags(uint32_t mask) const
+        {
+            return (const_cast<CBaseEntity*>(this)->m_fFlags() & mask) == mask;
         }
 
-        uint32_t GetFlags() {
-            auto flags = m_fFlags();
-            return flags ? flags : 0;
+        uint32_t GetFlags() const
+        {
+            return const_cast<CBaseEntity*>(this)->m_fFlags();
         }
 
         // ---------------------------
         // Basic entity info
         // ---------------------------
-        int entindex() const { return m_pEntity->m_EHandle.GetEntryIndex(); }
-        Vector GetAbsOrigin() { return m_CBodyComponent->m_pSceneNode->m_vecAbsOrigin; }
-        QAngle GetAngRotation() { return m_CBodyComponent->m_pSceneNode->m_angRotation; }
-        QAngle GetAbsRotation() { return m_CBodyComponent->m_pSceneNode->m_angAbsRotation; }
-        Vector GetAbsVelocity() { return m_vecAbsVelocity; }
-        void SetAbsOrigin(const Vector &vecOrigin) { m_CBodyComponent->m_pSceneNode->m_vecAbsOrigin(vecOrigin); }
+        Vector GetAbsOrigin()
+        {
+            if (!m_CBodyComponent) return Vector{};
+            if (!m_CBodyComponent->m_pSceneNode) return Vector{};
+            return m_CBodyComponent->m_pSceneNode->m_vecAbsOrigin();
+        }
 
-        void SetAbsRotation(const QAngle &angAbsRotation) {
+        QAngle GetAngRotation()
+        {
+            if (!m_CBodyComponent) return QAngle{};
+            if (!m_CBodyComponent->m_pSceneNode) return QAngle{};
+            return m_CBodyComponent->m_pSceneNode->m_angRotation();
+        }
+
+        QAngle GetAbsRotation()
+        {
+            if (!m_CBodyComponent) return QAngle{};
+            if (!m_CBodyComponent->m_pSceneNode) return QAngle{};
+            return m_CBodyComponent->m_pSceneNode->m_angAbsRotation();
+        }
+
+        Vector GetAbsVelocity() { return m_vecAbsVelocity; }
+
+        void SetAbsOrigin(const Vector& vecOrigin)
+        {
+            if (!m_CBodyComponent) return;
+            if (!m_CBodyComponent->m_pSceneNode) return;
+            m_CBodyComponent->m_pSceneNode->m_vecAbsOrigin(vecOrigin);
+        }
+
+        void SetAbsRotation(const QAngle& angAbsRotation)
+        {
+            if (!m_CBodyComponent) return;
+            if (!m_CBodyComponent->m_pSceneNode) return;
             m_CBodyComponent->m_pSceneNode->m_angAbsRotation(angAbsRotation);
         }
 
-        void SetAngRotation(const QAngle &angRotation) { m_CBodyComponent->m_pSceneNode->m_angRotation(angRotation); }
-        void SetAbsVelocity(const Vector &vecVelocity) { m_vecAbsVelocity = vecVelocity; }
-        void SetBaseVelocity(const Vector &vecVelocity) { m_vecBaseVelocity = vecVelocity; }
+        void SetAngRotation(const QAngle& angRotation)
+        {
+            if (!m_CBodyComponent) return;
+            if (!m_CBodyComponent->m_pSceneNode) return;
+            m_CBodyComponent->m_pSceneNode->m_angRotation(angRotation);
+        }
 
-        CEntitySubclassVDataBase *GetVData() {
-            return *(CEntitySubclassVDataBase **) ((uint8 *) (m_nSubclassID()) + 4);
+        void SetAbsVelocity(const Vector& vecVelocity) { m_vecAbsVelocity = vecVelocity; }
+
+        void SetBaseVelocity(const Vector& vecVelocity) { m_vecBaseVelocity = vecVelocity; }
+
+        CEntitySubclassVDataBase* GetVData()
+        {
+            return *(CEntitySubclassVDataBase**)((uint8*)(m_nSubclassID()) + 4);
         }
 
         // ---------------------------
         // Engine calls
         // ---------------------------
-        void Teleport(const Vector *position, const QAngle *angles, const Vector *velocity) {
-            CALL_VIRTUAL(void, gamedata::offsets::CBaseEntity_Teleport, this, position, angles, velocity);
+        void Teleport(const Vector* position, const QAngle* angles, const Vector* velocity)
+        {
+            static int offset = shared::g_pGameConfig->GetOffset("CBaseEntity_Teleport");
+            CALL_VIRTUAL(void, offset, this, position, angles, velocity);
         }
 
-        void SetMoveType(MoveType_t nMoveType) {
+        void SetMoveType(MoveType_t nMoveType)
+        {
             m_MoveType() = nMoveType;
             m_nActualMoveType() = nMoveType;
         }
 
-        void TakeDamage(int iDamage) {
-            {
-                m_iHealth() = m_iHealth() - iDamage;
-            }
-        }
-
-        void CollisionRulesChanged() {
-            CALL_VIRTUAL(void, gamedata::offsets::CBaseEntity_CollisionRulesChanged, this);
+        void CollisionRulesChanged()
+        {
+            static int offset = shared::g_pGameConfig->GetOffset("CBaseEntity_CollisionRulesChanged");
+            CALL_VIRTUAL(void, offset, this);
         }
 
         int GetTeam() { return m_iTeamNum(); }
@@ -348,30 +395,89 @@ namespace TemplatePlugin {
 
         CHandle<CBaseEntity> GetHandle() const { return m_pEntity->m_EHandle; }
 
-        const char *GetName() const { return m_pEntity->m_name.String(); }
-        const char *GetDesignerName() const { return m_pEntity ? m_pEntity->m_designerName.String() : ""; }
+        const char* GetName() const { return m_pEntity->m_name.String(); }
+        const char* GetDesignerName() const { return m_pEntity ? m_pEntity->m_designerName.String() : ""; }
+
+        // ---------------------------
+        // Detours
+        // ---------------------------
+        void DispatchSpawn()
+        {
+            using DispatchSpawn_t = void (*)(CBaseEntity* /*self*/, void* /*pMapData*/);
+            static DispatchSpawn_t s_DispatchSpawn = nullptr;
+
+            if (!s_DispatchSpawn)
+            {
+                DispatchSpawn_t addr = DynLibUtils::CModule(shared::g_pServer).FindPattern(
+                    shared::g_pGameConfig->GetSignature("CBaseEntity_DispatchSpawn")).RCast<DispatchSpawn_t>();
+                if (!addr) return;
+                s_DispatchSpawn = addr;
+            }
+
+            s_DispatchSpawn(this, nullptr);
+        }
+
+        void AcceptInput(const char* pInputName, CEntityInstance* pActivator = nullptr,
+                         CEntityInstance* pCaller = nullptr, const char* value = "")
+        {
+            if (!g_CEntityInstance_AcceptInput)
+            {
+                g_CEntityInstance_AcceptInput =
+                    DynLibUtils::CModule(shared::g_pServer)
+                    .FindPattern(shared::g_pGameConfig->GetSignature("CEntityInstance_AcceptInput"))
+                    .RCast<CEntityInstance_AcceptInput_t>();
+
+                if (!g_CEntityInstance_AcceptInput)
+                    return;
+            }
+
+            g_CEntityInstance_AcceptInput(this, pInputName, pActivator, pCaller, variant_t(value), 0, 0LL);
+        }
+
+        void AddEntityIOEvent(const char* pInputName, CEntityInstance* pActivator = nullptr,
+                              CEntityInstance* pCaller = nullptr, const char* value = "", float flDelay = 0.0)
+        {
+            if (!g_CEntitySystem_AddEntityIOEvent)
+            {
+                g_CEntitySystem_AddEntityIOEvent =
+                    DynLibUtils::CModule(shared::g_pServer)
+                    .FindPattern(shared::g_pGameConfig->GetSignature("CEntitySystem_AddEntityIOEvent"))
+                    .RCast<CEntitySystem_AddEntityIOEvent_t>();
+
+                if (!g_CEntitySystem_AddEntityIOEvent)
+                    return;
+            }
+
+            g_CEntitySystem_AddEntityIOEvent(shared::g_pEntitySystem, this, pInputName, pActivator, pCaller,
+                                             variant_t(value), flDelay, 0,
+                                             0LL, 0LL);
+        }
     };
 
-    class CBodyComponentSkeletonInstance : public CBodyComponent {
+    class CBodyComponentSkeletonInstance : public CBodyComponent
+    {
     public:
         DECLARE_SCHEMA_CLASS(CBodyComponentSkeletonInstance);
     };
 
-    class CBaseAnimGraphController {
+    class CBaseAnimGraphController
+    {
     public:
         DECLARE_SCHEMA_CLASS_INLINE(CBaseAnimGraphController);
 
         SCHEMA_FIELD(float, m_flPlaybackRate);
     };
 
-    class CBodyComponentBaseAnimGraph : public CBodyComponentSkeletonInstance {
+    class CBodyComponentBaseAnimGraph : public CBodyComponentSkeletonInstance
+    {
     public:
         DECLARE_SCHEMA_CLASS(CBodyComponentBaseAnimGraph);
 
         SCHEMA_FIELD(CBaseAnimGraphController, m_animationController);
     };
 
-    class SpawnPoint : public CBaseEntity {
+    class SpawnPoint : public CBaseEntity
+    {
     public:
         DECLARE_SCHEMA_CLASS(SpawnPoint);
 

@@ -4,10 +4,10 @@
 //
 #pragma once
 #include "ehandle.h"
-#include "CBaseEntity.h"
 #include "CCSPlayerPawn.h"
 
-namespace TemplatePlugin {
+namespace TemplatePlugin
+{
     enum class PlayerConnectedState : uint32_t
     {
         PlayerNeverConnected = 0xFFFFFFFF,
@@ -19,7 +19,8 @@ namespace TemplatePlugin {
         PlayerReserved = 0x5,
     };
 
-    class CBasePlayerController : public CBaseEntity {
+    class CBasePlayerController : public CBaseEntity
+    {
     public:
         DECLARE_SCHEMA_CLASS(CBasePlayerController);
 
@@ -35,10 +36,11 @@ namespace TemplatePlugin {
 
         SCHEMA_FIELD_POINTER(bool, m_bIsHLTV)
 
-        CBasePlayerPawn *GetPawn() { return m_hPawn.Get(); }
-        const char *GetPlayerName() { return m_iszPlayerName(); }
+        CBasePlayerPawn* GetPawn() { return m_hPawn.Get(); }
+        const char* GetPlayerName() { return m_iszPlayerName(); }
 
-        void SetPlayerName(const std::string &name) {
+        void SetPlayerName(const std::string& name)
+        {
             std::strncpy(m_iszPlayerName(), name.c_str(), 128);
             m_iszPlayerName()[127] = '\0';
         }
@@ -52,7 +54,30 @@ namespace TemplatePlugin {
         bool GetIsHLTV() { return *m_bIsHLTV(); }
         void SetIsHLTV(bool value) { *m_bIsHLTV() = value; }
 
-        uint64_t &SteamID() { return *m_steamID(); }
-        bool &IsHLTV() { return *m_bIsHLTV(); }
+        uint64_t& SteamID() { return *m_steamID(); }
+        bool& IsHLTV() { return *m_bIsHLTV(); }
+
+        using CBasePlayerController_SetPawn_t = void(*)(CBasePlayerController* pController, CCSPlayerPawn* pPawn,
+                                                        bool a3, bool a4, bool a5, bool a6);
+
+        void SetPawn(CCSPlayerPawn* pawn)
+        {
+            if (!pawn) return;
+
+            CBasePlayerController_SetPawn_t CBasePlayerController_SetPawn = nullptr;
+
+            if (!CBasePlayerController_SetPawn)
+            {
+                CBasePlayerController_SetPawn_t addr = addr =
+                    DynLibUtils::CModule(shared::g_pServer)
+                    .FindPattern(shared::g_pGameConfig->GetSignature("CBasePlayerController_SetPawn"))
+                    .RCast<CBasePlayerController_SetPawn_t>();
+                if (!addr)
+                    return;
+                CBasePlayerController_SetPawn = addr;
+            }
+
+            CBasePlayerController_SetPawn(this, pawn, true, false, false, false);
+        }
     };
 }

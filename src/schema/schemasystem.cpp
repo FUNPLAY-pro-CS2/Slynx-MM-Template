@@ -6,12 +6,13 @@
 #include "platform.h"
 #include "schemasystem/schemasystem.h"
 #include "tier1/utlmap.h"
-#include "tier0/memdbgon.h"
 #include <entity2/entityidentity.h>
 #include <entity2/entityinstance.h>
 #include <edict.h>
+#include <Shared.h>
+
 #include "CBaseEntity.h"
-#include "Shared.h"
+#include "tier0/memdbgon.h"
 
 #ifdef _WIN32
 #define MODULE_PREFIX ""
@@ -140,6 +141,16 @@ namespace TemplatePlugin {
         }
 
         return -1;
+    }
+
+    int GetClassSize(const char* className) {
+        CSchemaSystemTypeScope *pType = shared::g_pSchemaSystem->FindTypeScopeForModule(
+            MODULE_PREFIX "server" MODULE_EXT);
+
+        SchemaClassInfoData_t *pClassInfo = pType->FindDeclaredClass(className).Get();
+        if (!pClassInfo) return -1;
+
+        return pClassInfo->m_nSize;
     }
 
     void EntityNetworkStateChanged(uintptr_t entityInstance, uint nOffset)

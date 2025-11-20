@@ -8,6 +8,7 @@
 #include <schemasystem.h>
 #include <vector>
 #include <eiface.h>
+#include <gameconfig.h>
 #include <igameeventsystem.h>
 #include "schema/cgameresourceserviceserver.h"
 
@@ -29,6 +30,18 @@ namespace TemplatePlugin::shared
     extern IServerGameClients* g_pGameClients;
     extern CGlobalVars* g_pGlobalVars;
     extern CGameResourceService* g_pGameResourceServiceServer;
+    extern CGameConfig *g_pGameConfig;
 
     CGlobalVars* getGlobalVars();
+    extern const char *GetMapName();
+    extern void ServerCommand(const char *command);
+    extern double GetEngineTime();
+    extern float GetTickInterval();
+    extern float GetCurrentTime();
+    extern int GetTickCount();
+    extern float GetGameFrameTime();
+
+    extern double g_flUniversalTime;
+    extern float g_flLastTickedTime;
+    extern bool g_bHasTicked;
 }

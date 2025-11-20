@@ -8,12 +8,14 @@
 class CRecipientFilter : public IRecipientFilter
 {
 public:
-    CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false) :
-        m_nBufType(nBufType), m_bInitMessage(bInitMessage) {}
+    CRecipientFilter(NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false)
+        : m_nBufType(nBufType), m_bInitMessage(bInitMessage)
+    {
+    }
 
     CRecipientFilter(const IRecipientFilter* source, CPlayerSlot exceptSlot = -1)
     {
-        m_Recipients = CRecipientFilter::GetRecipients();
+        m_Recipients = source->GetRecipients();
         m_nBufType = source->GetNetworkBufType();
         m_bInitMessage = source->IsInitMessage();
 
@@ -21,11 +23,13 @@ public:
             m_Recipients.Clear(exceptSlot.Get());
     }
 
-    ~CRecipientFilter() override {}
+    ~CRecipientFilter() override = default;
 
-    NetChannelBufType_t GetNetworkBufType(void) const override { return m_nBufType; }
-    bool IsInitMessage(void) const override { return m_bInitMessage; }
-    const CPlayerBitVec& GetRecipients(void) const override { return m_Recipients; }
+    NetChannelBufType_t GetNetworkBufType() const override { return m_nBufType; }
+    bool IsInitMessage() const override { return m_bInitMessage; }
+    const CPlayerBitVec& GetRecipients() const override { return m_Recipients; }
+    CPlayerSlot GetPredictedPlayerSlot() const override { return m_slotPlayerExcludedDueToPrediction; }
+    virtual CPlayerSlot GetExcludedPlayerDueToPrediction() const { return m_slotPlayerExcludedDueToPrediction; }
 
     void AddRecipient(CPlayerSlot slot)
     {
@@ -33,24 +37,44 @@ public:
             m_Recipients.Set(slot.Get());
     }
 
-    int GetRecipientCount() const {
-        const uint64 bits = *reinterpret_cast<const uint64*>(&GetRecipients());
+    void AddRecipientsFromMask(uint64 mask)
+    {
+        for (int i = 0; i < 64; ++i)
+        {
+            if (mask & (uint64{1} << i))
+                AddRecipient(CPlayerSlot(i));
+        }
+    }
 
-        return std::popcount(bits);
+    int GetRecipientCount() const
+    {
+        const auto& vec = GetRecipients();
+        int count = 0;
+        for (int i = 0; i < ABSOLUTE_PLAYER_LIMIT; ++i)
+        {
+            if (vec.Get(i))
+                ++count;
+        }
+        return count;
     }
 
 protected:
-    NetChannelBufType_t m_nBufType;
-    bool m_bInitMessage;
     CPlayerBitVec m_Recipients;
+    CPlayerSlot m_slotPlayerExcludedDueToPrediction = -1;
+    NetChannelBufType_t m_nBufType = BUF_DEFAULT;
+    bool m_bInitMessage = false;
+    bool m_bDoNotSuppressPrediction = false; // unused
 };
 
 class CSingleRecipientFilter : public CRecipientFilter
 {
 public:
-    CSingleRecipientFilter(CPlayerSlot nRecipientSlot, NetChannelBufType_t nBufType = BUF_RELIABLE, bool bInitMessage = false)
+    CSingleRecipientFilter(CPlayerSlot nRecipientSlot,
+                           NetChannelBufType_t nBufType = BUF_RELIABLE,
+                           bool bInitMessage = false)
         : CRecipientFilter(nBufType, bInitMessage)
     {
-        if (nRecipientSlot.Get() >= 0 && nRecipientSlot.Get() < ABSOLUTE_PLAYER_LIMIT) m_Recipients.Set(nRecipientSlot.Get());
+        if (nRecipientSlot.Get() >= 0 && nRecipientSlot.Get() < ABSOLUTE_PLAYER_LIMIT)
+            m_Recipients.Set(nRecipientSlot.Get());
     }
 };

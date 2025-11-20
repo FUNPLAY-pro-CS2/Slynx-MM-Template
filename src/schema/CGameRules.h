@@ -51,6 +51,16 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(CUtlString, m_sDMBonusWeapon);
     };
 
+    class CCSGameRules;
+
+    class CCSGameRulesProxy : public CBaseEntity
+    {
+    public:
+        DECLARE_SCHEMA_CLASS(CCSGameRulesProxy)
+
+        SCHEMA_FIELD(CCSGameRules *, m_pGameRules);
+    };
+
     class CCSGameRules : public CGameRules
     {
     public:
@@ -88,13 +98,28 @@ namespace TemplatePlugin {
 
         using TerminateRoundFn = void(*)(CCSGameRules*, RoundEndReason, float, void*, uint8_t);
         TerminateRoundFn s_pTerminateRound = nullptr;
-    };
 
-    class CCSGameRulesProxy : public CBaseEntity
-    {
-    public:
-        DECLARE_SCHEMA_CLASS(CCSGameRulesProxy)
+        void TerminateRound(float delay, RoundEndReason roundEndReason) {
+            if (!s_pTerminateRound) {
+                TerminateRoundFn addr = DynLibUtils::CModule(shared::g_pServer).FindPattern(
+                        shared::g_pGameConfig->GetSignature("CCSGameRules_TerminateRound")).RCast<TerminateRoundFn>();
 
-        SCHEMA_FIELD(CCSGameRules *, m_pGameRules);
+                if (!addr)
+                    return;
+
+                s_pTerminateRound = addr;
+            }
+            s_pTerminateRound(this, roundEndReason, delay, nullptr, 0);
+        }
+
+        static CCSGameRules* FindGameRules()
+        {
+            auto entities = UTIL_FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
+            if (entities.empty())
+                return nullptr;
+
+            auto* proxy = entities.front();
+            return proxy ? proxy->m_pGameRules() : nullptr;
+        }
     };
 }

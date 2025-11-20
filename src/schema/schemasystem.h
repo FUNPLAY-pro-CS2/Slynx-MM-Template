@@ -142,6 +142,8 @@ namespace TemplatePlugin {
         SchemaKey GetOffset(const char *className, uint32_t classKey, const char *memberName, uint32_t memberKey);
 
         int32_t GetServerOffset(const char *pszClassName, const char *pszPropName);
+
+    	int GetClassSize(const char* className);
     }
 
 #define DECLARE_SCHEMA_CLASS_BASE(className, isStruct)			\

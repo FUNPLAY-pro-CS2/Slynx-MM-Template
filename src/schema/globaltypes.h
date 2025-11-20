@@ -183,7 +183,8 @@ namespace TemplatePlugin {
         DMG_DANGERZONE = 0x4000000,
     };
 
-    enum TakeDamageFlags_t : uint32_t {
+    enum TakeDamageFlags_t : uint64_t
+    {
         DFLAG_NONE = 0x0,
         DFLAG_SUPPRESS_HEALTH_CHANGES = 0x1,
         DFLAG_SUPPRESS_PHYSICS_FORCE = 0x2,
@@ -196,8 +197,12 @@ namespace TemplatePlugin {
         DFLAG_SUPPRESS_DAMAGE_MODIFICATION = 0x100,
         DFLAG_ALWAYS_FIRE_DAMAGE_EVENTS = 0x200,
         DFLAG_RADIUS_DMG = 0x400,
-        DMG_LASTDFLAG = 0x400,
-        DFLAG_IGNORE_ARMOR = 0x800,
+        DFLAG_FORCEREDUCEARMOR_DMG = 0x800,
+        DFLAG_SUPPRESS_INTERRUPT_FLINCH = 0x1000,
+        DFLAG_IGNORE_DESTRUCTIBLE_PARTS = 0x2000,
+        DMG_LASTDFLAG = 0x2000,
+        DFLAG_IGNORE_ARMOR = 0x4000,
+        DFLAG_SUPPRESS_UTILREMOVE = 0x8000,
     };
 
     struct EmitSound_t {

@@ -12,23 +12,21 @@
 #include "schema/plat.h"
 #include <filesystem>
 #include <cstdio>
+#include <detours.h>
 #include <fstream>
+#include <gameconfig.h>
 #include <regex>
 #include "EntityData.h"
 #include "PlayersData.h"
-#include "prints.h"
 #include "tasks.h"
+#include "schema/CGameRules.h"
 
 PLUGIN_EXPOSE(Template, TemplatePlugin::g_Template);
 
 CGameEntitySystem* GameEntitySystem()
 {
-#ifdef WIN32
-    static int offset = 88;
-#else
-    static int offset = 80;
-#endif
-    return *reinterpret_cast<CGameEntitySystem**>((uintptr_t)(g_pGameResourceServiceServer) + offset);
+    return *reinterpret_cast<CGameEntitySystem**>((uintptr_t)(g_pGameResourceServiceServer) +
+        TemplatePlugin::shared::g_pGameConfig->GetOffset("GameEntitySystem"));
 }
 
 class GameSessionConfiguration_t
@@ -38,13 +36,11 @@ class GameSessionConfiguration_t
 namespace TemplatePlugin
 {
     TemplatePlugin g_Template;
-    CEntityListener g_EntityListener;
 
     SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
     SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t&,
                        ISource2WorldSession*, const char*);
     SH_DECL_HOOK2(IGameEventManager2, LoadEventsFromFile, SH_NOATTRIB, 0, int, const char*, bool);
-    SH_DECL_HOOK2(IGameEventManager2, FireEvent, SH_NOATTRIB, 0, bool, IGameEvent*, bool);
 
     int g_iLoadEventsFromFileId = -1;
 
@@ -80,6 +76,17 @@ namespace TemplatePlugin
             return false;
 
         Tasks::Init();
+        Detours::InitHooks();
+        RayTrace::Initialize();
+        auto gamedata_path = std::string(Paths::GetRootDirectory() + "/gamedata.json");
+        shared::g_pGameConfig = new CGameConfig(gamedata_path);
+        char conf_error[255] = "";
+
+        if (!shared::g_pGameConfig->Init(conf_error, sizeof(conf_error)))
+        {
+            META_LOG(&g_Template, "Could not read '%s'. Error: %s", gamedata_path.c_str(), conf_error);
+            return false;
+        }
 
         g_SMAPI->AddListener(this, this);
 
@@ -107,9 +114,9 @@ namespace TemplatePlugin
                        SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
         SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
 
-        ShutdownHooks();
-        shared::g_pEntitySystem->RemoveListenerEntity(&g_EntityListener);
-
+        Detours::ShutdownHooks();
+        Detours::Shutdown();
+        shared::g_pEntitySystem->RemoveListenerEntity(&Detours::entityListener);
         Tasks::Shutdown();
 
         META_LOG(&g_Template, "[Template] <<< Unload() success!\n");
@@ -125,17 +132,28 @@ namespace TemplatePlugin
     void TemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
     {
         Tasks::Tick();
+        if (!shared::getGlobalVars())
+            return;
+
+        if (simulating && shared::g_bHasTicked)
+            shared::g_flUniversalTime += shared::getGlobalVars()->curtime - shared::g_flLastTickedTime;
+
+        shared::g_flLastTickedTime = shared::getGlobalVars()->curtime;
+        shared::g_bHasTicked = true;
+
+        if (CCSGameRules::FindGameRules())
+            CCSGameRules::FindGameRules()->m_bGameRestart =
+                    CCSGameRules::FindGameRules()->m_flRestartRoundTime < shared::GetCurrentTime();
     }
 
-    bool done = false;
+    static bool done = false;
     void TemplatePlugin::Hook_StartupServer(const GameSessionConfiguration_t& config,
-                                      ISource2WorldSession*, const char*)
+                                            ISource2WorldSession*, const char*)
     {
         if (!done)
         {
             shared::g_pEntitySystem = GameEntitySystem();
-            shared::g_pEntitySystem->AddListenerEntity(&g_EntityListener);
-            InitHooks();
+            shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
             done = true;
         }
     }
@@ -144,147 +162,6 @@ namespace TemplatePlugin
     {
         ExecuteOnce(shared::g_pGameEventManager = META_IFACEPTR(IGameEventManager2));
         RETURN_META_VALUE(MRES_IGNORED, 0);
-    }
-
-    static std::unordered_map<std::string, std::vector<std::pair<GameEventHandler, HookMode>>> g_eventHandlers;
-    static std::vector<IGameEvent*> g_eventStack;
-
-    static HookResult DispatchEvent(IGameEvent* event, HookMode mode, bool& dontBroadcast)
-    {
-        if (!event) return HookResult::Continue;
-
-        const char* name = event->GetName();
-        auto it = g_eventHandlers.find(name);
-        if (it == g_eventHandlers.end()) return HookResult::Continue;
-
-        EventOverride override{dontBroadcast};
-        HookResult result = HookResult::Continue;
-
-        for (auto& [handler, hmode] : it->second)
-        {
-            if (hmode != mode)
-                continue;
-
-            HookResult r = handler(event, mode, override);
-            if (r == HookResult::Stop)
-                return HookResult::Stop;
-            if (r == HookResult::Handled)
-                return HookResult::Handled;
-            if (static_cast<int>(r) > static_cast<int>(result))
-                result = r;
-        }
-
-        dontBroadcast = override.dontBroadcast;
-        return result;
-    }
-
-    static bool OnFireEvent(IGameEvent* event, bool bDontBroadcast)
-    {
-        if (!event)
-            RETURN_META_VALUE(MRES_IGNORED, false);
-
-        bool localDontBroadcast = bDontBroadcast;
-        HookResult res = DispatchEvent(event, HookMode::Pre, localDontBroadcast);
-
-        if (res == HookResult::Stop || res == HookResult::Handled)
-            RETURN_META_VALUE(MRES_SUPERCEDE, false);
-
-        if (IGameEvent* copy = shared::g_pGameEventManager->DuplicateEvent(event))
-            g_eventStack.push_back(copy);
-
-        if (localDontBroadcast != bDontBroadcast)
-            RETURN_META_VALUE_NEWPARAMS(MRES_IGNORED, true, &IGameEventManager2::FireEvent,
-                                    (event, localDontBroadcast));
-
-        RETURN_META_VALUE(MRES_IGNORED, true);
-    }
-
-    static bool OnFireEventPost(IGameEvent* event, bool bDontBroadcast)
-    {
-        if (!event)
-            RETURN_META_VALUE(MRES_IGNORED, false);
-
-        if (!g_eventStack.empty())
-        {
-            IGameEvent* copy = g_eventStack.back();
-            g_eventStack.pop_back();
-
-            bool dummy = bDontBroadcast;
-            DispatchEvent(copy, HookMode::Post, dummy);
-            shared::g_pGameEventManager->FreeEvent(copy);
-        }
-
-        RETURN_META_VALUE(MRES_IGNORED, true);
-    }
-
-    void InitHooks()
-    {
-        SH_ADD_HOOK(IGameEventManager2, FireEvent, shared::g_pGameEventManager, OnFireEvent, false);
-        SH_ADD_HOOK(IGameEventManager2, FireEvent, shared::g_pGameEventManager, OnFireEventPost, true);
-
-        RegisterGameEvent("player_connect", OnPlayerConnectFull, HookMode::Pre);
-    }
-
-    void ShutdownHooks()
-    {
-        SH_REMOVE_HOOK(IGameEventManager2, FireEvent, shared::g_pGameEventManager, OnFireEvent, false);
-        SH_REMOVE_HOOK(IGameEventManager2, FireEvent, shared::g_pGameEventManager, OnFireEventPost, true);
-
-        for (auto* ev : g_eventStack)
-            shared::g_pGameEventManager->FreeEvent(ev);
-
-        g_eventStack.clear();
-        g_eventHandlers.clear();
-    }
-
-    void RegisterGameEvent(const std::string& name, GameEventHandler handler, HookMode mode)
-    {
-        g_eventHandlers[name].push_back({handler, mode});
-    }
-
-    HookResult OnPlayerConnectFull(IGameEvent* ev, HookMode mode, EventOverride& override)
-    {
-        if (!ev)
-            return HookResult::Continue;
-
-        CCSPlayerController* player = static_cast<CCSPlayerController*>(ev->GetPlayerController("userid"));
-        if (!player || !player->CheckValid())
-            return HookResult::Continue;
-
-        META_LOG(&g_Template, "Player %s joined yay!\n", player->GetPlayerName());
-
-        return HookResult::Continue;
-    }
-
-    void CEntityListener::OnEntityCreated(CEntityInstance* pEntity)
-    {
-        if (!pEntity) return;
-
-        auto* baseEntity = static_cast<CBaseEntity*>(pEntity);
-        CHandle<CBaseEntity> handle = baseEntity->GetHandle();
-
-        EntityData_t data;
-        data.Init();
-
-        EntityData[handle] = std::move(data);
-    }
-
-    void CEntityListener::OnEntityDeleted(CEntityInstance* pEntity)
-    {
-        if (!pEntity) return;
-
-        auto* baseEntity = static_cast<CBaseEntity*>(pEntity);
-        CHandle<CBaseEntity> handle = baseEntity->GetHandle();
-
-        EntityData.erase(handle);
-    }
-
-    void CEntityListener::OnEntitySpawned(CEntityInstance* pEntity)
-    {
-        if (!pEntity)
-            return;
-
-        auto* baseEntity = static_cast<CCSWeaponBase*>(pEntity);
     }
 
     const char* TemplatePlugin::GetAuthor() { return "Slynx"; }

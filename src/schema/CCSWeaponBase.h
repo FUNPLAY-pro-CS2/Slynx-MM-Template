@@ -29,6 +29,34 @@ namespace TemplatePlugin {
 		GEAR_SLOT_LAST = 0xc,
 	};
 
+	enum CSWeaponType : uint32_t
+	{
+		WEAPONTYPE_KNIFE = 0,
+		WEAPONTYPE_PISTOL = 1,
+		WEAPONTYPE_SUBMACHINEGUN = 2,
+		WEAPONTYPE_RIFLE = 3,
+		WEAPONTYPE_SHOTGUN = 4,
+		WEAPONTYPE_SNIPER_RIFLE = 5,
+		WEAPONTYPE_MACHINEGUN = 6,
+		WEAPONTYPE_C4 = 7,
+		WEAPONTYPE_TASER = 8,
+		WEAPONTYPE_GRENADE = 9,
+		WEAPONTYPE_EQUIPMENT = 10,
+		WEAPONTYPE_STACKABLEITEM = 11,
+		WEAPONTYPE_UNKNOWN = 12,
+	};
+
+	enum CSWeaponCategory : uint32_t
+	{
+		WEAPONCATEGORY_OTHER = 0,
+		WEAPONCATEGORY_MELEE = 1,
+		WEAPONCATEGORY_SECONDARY = 2,
+		WEAPONCATEGORY_SMG = 3,
+		WEAPONCATEGORY_RIFLE = 4,
+		WEAPONCATEGORY_HEAVY = 5,
+		WEAPONCATEGORY_COUNT = 6,
+	};
+
 	class CAttributeManager
 	{
 	public:
@@ -97,6 +125,15 @@ namespace TemplatePlugin {
 		SCHEMA_FIELD(int32, m_nFallbackStatTrak)
 	};
 
+	class CEconWearable : public CEconEntity
+	{
+	public:
+		DECLARE_SCHEMA_CLASS(CEconWearable)
+
+		SCHEMA_FIELD(int32, m_nForceSkin)
+		SCHEMA_FIELD(bool, m_bAlwaysAllow)
+	};
+
 	class CBasePlayerWeaponVData : public CEntitySubclassVDataBase
 	{
 	public:
@@ -111,6 +148,8 @@ namespace TemplatePlugin {
 	public:
 		DECLARE_SCHEMA_CLASS(CCSWeaponBaseVData)
 
+		SCHEMA_FIELD(CSWeaponType, m_WeaponType);
+		SCHEMA_FIELD(CSWeaponCategory, m_WeaponCategory);
 		SCHEMA_FIELD(gear_slot_t, m_GearSlot)
 		SCHEMA_FIELD(int, m_nPrice)
 		SCHEMA_FIELD(CUtlString, m_szName)
@@ -124,9 +163,9 @@ namespace TemplatePlugin {
 	public:
 		DECLARE_SCHEMA_CLASS(CBasePlayerWeapon)
 
-		SCHEMA_FIELD(GameTick_t, m_nNextPrimaryAttackTick);
+		SCHEMA_FIELD(int, m_nNextPrimaryAttackTick);
 		SCHEMA_FIELD(float, m_flNextPrimaryAttackTickRatio);
-		SCHEMA_FIELD(GameTick_t, m_nNextSecondaryAttackTick);
+		SCHEMA_FIELD(int, m_nNextSecondaryAttackTick);
 		SCHEMA_FIELD(float, m_flNextSecondaryAttackTickRatio);
 
 	    SCHEMA_FIELD(int32_t, m_iClip1);
@@ -173,8 +212,11 @@ namespace TemplatePlugin {
 		SCHEMA_FIELD(bool, m_bInReload);
 		SCHEMA_FIELD(bool, m_bReloadVisuallyComplete);
 		SCHEMA_FIELD(bool, m_bRequireUseToTouch);
+		SCHEMA_FIELD(float, m_flDroppedAtTime);
+		SCHEMA_FIELD(float, m_fAccuracyPenalty);
+		SCHEMA_FIELD(float, m_flRecoilIndex);
+		SCHEMA_FIELD(int, m_iRecoilIndex);
 	};
-
 
 	class CWeaponBaseItem : public CCSWeaponBase
 	{

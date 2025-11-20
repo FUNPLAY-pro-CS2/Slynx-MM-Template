@@ -4,8 +4,8 @@
 //
 #pragma once
 #include "CBaseEntity.h"
-#include "CBaseModelEntity.h"
 #include "globaltypes.h"
+#include "CBaseModelEntity.h"
 
 namespace TemplatePlugin {
     class CSkyCamera : public CBaseEntity

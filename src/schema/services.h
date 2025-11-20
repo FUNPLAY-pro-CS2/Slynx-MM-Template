@@ -31,8 +31,8 @@
 #define AMMO_OFFSET_DECOY 17
 
 namespace TemplatePlugin {
-    class CCSPlayerPawn;
     class CCSPlayerController;
+    class CCSPlayerPawn;
     extern bool g_bAwsChangingTeam;
 
     struct CSPerRoundStats_t {
@@ -165,6 +165,8 @@ namespace TemplatePlugin {
 
         SCHEMA_FIELD(float, m_flJumpVel)
 
+        SCHEMA_FIELD(float, m_flJumpPressedTime)
+
         SCHEMA_FIELD(float, m_flStamina)
 
         SCHEMA_FIELD(float, m_flDuckSpeed)
@@ -212,6 +214,16 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(bool, m_bIsPickingUpItemWithUse)
 
         SCHEMA_FIELD(bool, m_bPickedUpWeapon)
+
+        void DropWeapon(CBasePlayerWeapon *pWeapon, Vector *pVecTarget = nullptr, Vector *pVelocity = nullptr) {
+            static int offset = shared::g_pGameConfig->GetOffset("CCSPlayer_WeaponServices_DropWeapon");
+            CALL_VIRTUAL(void, offset, this, pWeapon, pVecTarget, pVelocity);
+        }
+
+        void SelectItem(CBasePlayerWeapon *pWeapon, int unk1 = 0) {
+            static int offset = shared::g_pGameConfig->GetOffset("CCSPlayer_WeaponServices_SelectItem");
+            CALL_VIRTUAL(void, offset, this, pWeapon, unk1);
+        }
     };
 
     class CCSPlayerController_ActionTrackingServices : public CPlayerControllerComponent {
@@ -238,62 +250,16 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(int,  m_iCashSpentThisRound);       // CashSpentThisRound
     };
 
-    typedef uint64 itemid_t;
-
-    struct SOID_t
-    {
-        uint64 m_id; // CSteamID
-        uint32 m_type;
-        uint32 m_padding;
-    };
-
-    struct CCSPlayerInventory
-    {
-        void **__vtable;
-        int m_nTargetRecipe;
-        SOID_t m_OwnerID;
-
-        struct
-        {
-            CUtlVector<CEconItemView *> m_vecInventoryItems;
-            CUtlMap<itemid_t, CEconItemView *, int, CDefLess<itemid_t>> m_mapItemIDToItemView;
-        } m_Items;
-
-        int m_iPendingRequests;
-        bool m_bGotItemsFromSteamAtLeastOnce, m_bCurrentlySubscribedToSteam;
-
-        void *m_pSOCache;
-
-        CUtlVector<void *> m_vecListeners;
-
-        int m_nActiveQuestID;
-
-        struct
-        {
-            itemid_t itemID;
-            uint16 definitionIndex;
-        } m_loadoutItems[4][57];
-    };
-
-    class CCSPlayerController_InventoryServices : public CPlayerControllerComponent
-    {
+    class CCSPlayerController_InventoryServices : public CPlayerControllerComponent {
         virtual ~CCSPlayerController_InventoryServices() = 0;
 
     public:
         DECLARE_SCHEMA_CLASS(CCSPlayerController_InventoryServices);
 
-        SCHEMA_FIELD_POINTER_OFFSET(CCSPlayerInventory, m_nPersonaDataXpTrailLevel, 4)
-
+        SCHEMA_FIELD(int32_t, m_nPersonaDataXpTrailLevel)
         SCHEMA_FIELD(int32_t, m_nPersonaDataPublicLevel)
-
         SCHEMA_FIELD(uint16_t, m_unMusicID)
-
         SCHEMA_FIELD_POINTER(int, m_rank)
-
-        CCSPlayerInventory *GetInventory()
-        {
-            return m_nPersonaDataXpTrailLevel();
-        }
     };
 
     class CPlayer_ItemServices : public CPlayerPawnComponent {
@@ -332,6 +298,10 @@ namespace TemplatePlugin {
         [[nodiscard]] static gear_slot_t GetItemGearSlot(const char *item) noexcept;
 
         CBasePlayerWeapon *GiveNamedItemAws(const char *item) noexcept;
+
+        void RemoveWeapons() {
+            CALL_VIRTUAL(void, shared::g_pGameConfig->GetOffset("CCSPlayer_ItemServices_RemoveWeapons"), this);
+        }
     };
 
     // We need an exactly sized class to be able to iterate the vector, our schema system implementation can't do this
@@ -359,6 +329,13 @@ namespace TemplatePlugin {
         uint64_t unk5 = -1; // 0x28
 
     public:
+        WeaponPurchaseCount_t(CCSPlayerPawn *pPawn, uint16 nItemDefIndex, uint16 nCount) : m_pPawn(pPawn),
+            m_nItemDefIndex(nItemDefIndex), m_nCount(nCount) {
+            // Since we're constructing a new object, the vtable pointer will be incorrect so fix it
+            static const auto pVTable = DynLibUtils::CModule(shared::g_pEntitySystem).GetVirtualTableByName("WeaponPurchaseCount_t");
+            ((void **) this)[0] = pVTable;
+        }
+
         uint16_t m_nItemDefIndex; // 0x30
         uint16_t m_nCount; // 0x32
     private:

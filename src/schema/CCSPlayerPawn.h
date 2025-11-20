@@ -98,6 +98,7 @@ namespace TemplatePlugin {
 		SCHEMA_FIELD(GameTime_t, m_flHealthShotBoostExpirationTime)
 		SCHEMA_FIELD(int32, m_ArmorValue)
 		SCHEMA_FIELD(bool, m_bInBuyZone)
+		SCHEMA_FIELD(bool, m_bInBombZone);
 		SCHEMA_FIELD(EntitySpottedState_t, m_entitySpottedState)
 		SCHEMA_FIELD(bool, m_bIsScoped)
 		SCHEMA_FIELD(int, m_aimPunchTickBase)
