@@ -48,7 +48,6 @@ for sdk_target in MMSPlugin.sdk_targets:
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'libfunchook.a'),
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'libdistorm.a'),
     ]
-    binary.sources += [os.path.join(projectPath, 'vendor', 'dynlibutils', 'module_linux.cpp')]
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.postlink += [
       os.path.join('psapi.lib'),
@@ -56,7 +55,6 @@ for sdk_target in MMSPlugin.sdk_targets:
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'distorm.lib'),
       os.path.join(sdk['path'], 'lib', 'public', 'win64', 'steam_api64.lib')
     ]
-    binary.sources += [os.path.join(projectPath, 'vendor', 'dynlibutils', 'module_windows.cpp')]
 
   src_dir = os.path.join(projectPath, "src")
   for root, dirs, files in os.walk(src_dir):
