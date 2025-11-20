@@ -1,36 +1,55 @@
+# vim: set ts=2 sw=2 tw=99 noet ft=python:
 import os
-import shutil
 
 builder.SetBuildFolder('package')
 
-projectPath = os.path.join(builder.sourcePath, '../')
 pluginName = MMSPlugin.plugin_name
 
-# addons/<pluginName>/
+# Root plugin folder: addons/<pluginName>/
 pluginFolder = builder.AddFolder(os.path.join('addons', pluginName))
 
-# addons/<pluginName>/bin/
-binFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin'))
+# Root bin folder: addons/<pluginName>/bin/
+binRoot = builder.AddFolder(os.path.join('addons', pluginName, 'bin'))
 
-# Platform-specific bin folders
-if builder.platform == 'windows':
-    archFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin', 'win64'))
-elif builder.platform == 'linux':
-    archFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin', 'linuxsteamrt64'))
-else:
-    raise Exception("Unknown platform " + builder.platform)
+# Pre-create platform-specific bin folders based on available compilers
+platformFolders = {}
 
-# Copy plugin binaries into addons/<plugin>/bin/<arch>/
+for cxx in MMSPlugin.all_targets:
+    if cxx.target.arch != 'x86_64':
+        continue
+
+    if cxx.target.platform == 'windows':
+        path = os.path.join('addons', pluginName, 'bin', 'win64')
+    elif cxx.target.platform == 'linux':
+        path = os.path.join('addons', pluginName, 'bin', 'linuxsteamrt64')
+    elif cxx.target.platform == 'mac':
+        path = os.path.join('addons', pluginName, 'bin', 'osx64')
+    else:
+        continue
+
+    platformFolders[cxx.target.platform] = builder.AddFolder(path)
+
+# Copy plugin binaries
 for task in MMSPlugin.binaries:
-    builder.AddCopy(task.binary, archFolder)
+    platform = task.target.platform
+
+    if platform == 'windows':
+        dest = platformFolders['windows']
+    elif platform == 'linux':
+        dest = platformFolders['linux']
+    elif platform == 'mac':
+        dest = platformFolders['mac']
+    else:
+        raise Exception(f"Unknown platform '{platform}' in PackageScript")
+
+    builder.AddCopy(task.binary, dest)
 
 # Copy configs folder recursively
-configs_src = os.path.join(projectPath, "configs")
+configs_src = os.path.join(builder.sourcePath, '../configs')
 
 for root, dirs, files in os.walk(configs_src):
     rel = os.path.relpath(root, configs_src)
 
-    # root folder "configs" collapses into package/
     if rel == ".":
         folder = builder
     else:
