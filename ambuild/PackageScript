@@ -6,12 +6,25 @@ builder.SetBuildFolder('package')
 projectPath = os.path.join(builder.sourcePath, '../')
 pluginName = MMSPlugin.plugin_name
 
+# addons/<pluginName>/
 pluginFolder = builder.AddFolder(os.path.join('addons', pluginName))
-metamodFolder = builder.AddFolder(os.path.join('addons', 'metamod'))
 
+# addons/<pluginName>/bin/
+binFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin'))
+
+# Platform-specific bin folders
+if builder.platform == 'windows':
+    archFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin', 'win64'))
+elif builder.platform == 'linux':
+    archFolder = builder.AddFolder(os.path.join('addons', pluginName, 'bin', 'linuxsteamrt64'))
+else:
+    raise Exception("Unknown platform " + builder.platform)
+
+# Copy plugin binaries into addons/<plugin>/bin/<arch>/
 for task in MMSPlugin.binaries:
-    builder.AddCopy(task.binary, pluginFolder)
+    builder.AddCopy(task.binary, archFolder)
 
+# Copy configs folder recursively
 configs_src = os.path.join(projectPath, "configs")
 
 for root, dirs, files in os.walk(configs_src):
@@ -19,7 +32,7 @@ for root, dirs, files in os.walk(configs_src):
 
     # root folder "configs" collapses into package/
     if rel == ".":
-        folder = builder  # root of package/
+        folder = builder
     else:
         folder = builder.AddFolder(rel)
 
