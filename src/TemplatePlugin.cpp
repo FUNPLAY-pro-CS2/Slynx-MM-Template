@@ -72,9 +72,6 @@ namespace TemplatePlugin
         if (!shared::g_pGameResourceServiceServer)
             return false;
 
-        if (!InitGameSystems())
-            return false;
-
         Tasks::Init();
         Detours::InitHooks();
         RayTrace::Initialize();
@@ -87,6 +84,9 @@ namespace TemplatePlugin
             META_LOG(&g_Template, "Could not read '%s'. Error: %s", gamedata_path.c_str(), conf_error);
             return false;
         }
+
+        if (!InitGameSystems())
+            return false;
 
         g_SMAPI->AddListener(this, this);
 
