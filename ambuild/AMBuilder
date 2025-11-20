@@ -30,7 +30,7 @@ for sdk_target in MMSPlugin.sdk_targets:
           cwd=projectPath
       ).decode('ascii').strip()
   except subprocess.SubprocessError:
-      version = "1.3-dev"
+      version = "v1.x.x-Dev"
       print("git describe failed as there are no tags")
 
   print(f'Setting version to "{version}"')
