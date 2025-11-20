@@ -7,7 +7,7 @@
 
 namespace TemplatePlugin
 {
-    class TemplatePlugin : public ISmmPlugin, public IMetamodListener
+    class ITemplatePlugin : public ISmmPlugin, public IMetamodListener
     {
         void Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick);
         void Hook_StartupServer(const GameSessionConfiguration_t& config, ISource2WorldSession*, const char*);
@@ -26,7 +26,7 @@ namespace TemplatePlugin
         const char *GetLogTag() override;
     };
 
-    extern TemplatePlugin g_Template;
+    extern ITemplatePlugin g_iPlugin;
 }
 
 #endif //_INCLUDE_METAMOD_SOURCE_STUB_PLUGIN_H_

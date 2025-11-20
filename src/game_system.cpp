@@ -22,7 +22,7 @@ bool InitGameSystems()
     auto result = libserver.FindPattern(TemplatePlugin::shared::g_pGameConfig->GetSignature("IGameSystem_InitAllSystems_pFirst"));
     if (!result)
     {
-        META_LOG(&TemplatePlugin::g_Template, "[Template] <<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");
+        META_LOG(&TemplatePlugin::g_iPlugin, "<<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");
         return false;
     }
 

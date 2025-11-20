@@ -52,7 +52,7 @@ namespace TemplatePlugin {
             SchemaKeyValueMap_t *map = new SchemaKeyValueMap_t(0, 0, DefLessFunc(uint32_t));
             tableMap->Insert(classKey, map);
 
-            Msg("InitSchemaFieldsForClass(): '%s' was not found!\n", className);
+            META_LOG(&g_iPlugin, "InitSchemaFieldsForClass(): '%s' was not found!\n", className);
             return false;
         }
 

@@ -199,7 +199,7 @@ namespace TemplatePlugin::Detours
         void* addr = FindModuleSignature(std::move(module), sigName.c_str());
         if (!addr)
         {
-            Msg("Failed to find signature for '%s'", sigName);
+            META_LOG(&g_iPlugin, "Failed to find signature for '%s'", sigName);
             return;
         }
 
@@ -222,7 +222,7 @@ namespace TemplatePlugin::Detours
             ) != 0 ||
             funchook_install(hook, 0) != 0)
         {
-            Msg("Failed to hook '%s'", sigName);
+            META_LOG(&g_iPlugin, "Failed to hook '%s'", sigName);
             return;
         }
 

@@ -343,12 +343,12 @@ namespace TemplatePlugin {
 
                 int rc = funchook_uninstall(hook, 0);
                 if (rc != 0) {
-                    Msg("Failed to uninstall hook: %i", rc);
+                    META_LOG(&g_iPlugin, "Failed to uninstall hook: %i", rc);
                 }
 
                 rc = funchook_destroy(hook);
                 if (rc != 0) {
-                    Msg("Failed to destroy hook: %i", rc);
+                    META_LOG(&g_iPlugin, "Failed to destroy hook: %i", rc);
                 }
             }
             hookHandles.clear();

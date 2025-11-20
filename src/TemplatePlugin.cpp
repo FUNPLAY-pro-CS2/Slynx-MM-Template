@@ -21,7 +21,7 @@
 #include "tasks.h"
 #include "schema/CGameRules.h"
 
-PLUGIN_EXPOSE(Template, TemplatePlugin::g_Template);
+PLUGIN_EXPOSE(Template, TemplatePlugin::g_iPlugin);
 
 CGameEntitySystem* GameEntitySystem()
 {
@@ -35,7 +35,7 @@ class GameSessionConfiguration_t
 
 namespace TemplatePlugin
 {
-    TemplatePlugin g_Template;
+    ITemplatePlugin g_iPlugin;
 
     SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
     SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t&,
@@ -44,7 +44,7 @@ namespace TemplatePlugin
 
     int g_iLoadEventsFromFileId = -1;
 
-    bool TemplatePlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+    bool ITemplatePlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
     {
         PLUGIN_SAVEVARS();
 
@@ -79,7 +79,7 @@ namespace TemplatePlugin
 
         if (!shared::g_pGameConfig->Init(conf_error, sizeof(conf_error)))
         {
-            META_LOG(&g_Template, "Could not read '%s'. Error: %s", gamedata_path.c_str(), conf_error);
+            META_LOG(&g_iPlugin, "Could not read '%s'. Error: %s", gamedata_path.c_str(), conf_error);
             return false;
         }
 
@@ -89,22 +89,22 @@ namespace TemplatePlugin
         g_SMAPI->AddListener(this, this);
 
         SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                            &TemplatePlugin::Hook_GameFrame, false);
+                            &ITemplatePlugin::Hook_GameFrame, false);
         SH_ADD_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                    SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
+                    SH_MEMBER(this, &ITemplatePlugin::Hook_StartupServer), true);
         auto pCGameEventManagerVTable = DynLibUtils::CModule(shared::g_pServer).
                                         GetVirtualTableByName("CGameEventManager").RCast<IGameEventManager2*>();
         g_iLoadEventsFromFileId = SH_ADD_DVPHOOK(IGameEventManager2, LoadEventsFromFile, pCGameEventManagerVTable,
-                                                 SH_MEMBER(this, &TemplatePlugin::Hook_LoadEventsFromFile), false);
+                                                 SH_MEMBER(this, &ITemplatePlugin::Hook_LoadEventsFromFile), false);
 
         g_pCVar = shared::g_pCVar;
         ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
-        META_LOG(&g_Template, "[Template] <<< Load() success!\n");
+        META_LOG(&g_iPlugin, "<<< Load() success!\n");
         return true;
     }
 
-    bool TemplatePlugin::Unload(char* error, size_t maxlen)
+    bool ITemplatePlugin::Unload(char* error, size_t maxlen)
     {
         Detours::ShutdownHooks();
         Detours::Shutdown();
@@ -112,22 +112,22 @@ namespace TemplatePlugin
         Tasks::Shutdown();
         
         SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                               &TemplatePlugin::Hook_GameFrame, false);
+                               &ITemplatePlugin::Hook_GameFrame, false);
         SH_REMOVE_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                       SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
+                       SH_MEMBER(this, &ITemplatePlugin::Hook_StartupServer), true);
         SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
 
-        META_LOG(&g_Template, "[Template] <<< Unload() success!\n");
+        META_LOG(&g_iPlugin, "<<< Unload() success!\n");
 
         return true;
     }
 
-    void TemplatePlugin::OnLevelShutdown()
+    void ITemplatePlugin::OnLevelShutdown()
     {
         Tasks::RemoveMapChangeTimers();
     }
 
-    void TemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
+    void ITemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
     {
         Tasks::Tick();
         if (!shared::getGlobalVars())
@@ -145,7 +145,7 @@ namespace TemplatePlugin
     }
 
     static bool done = false;
-    void TemplatePlugin::Hook_StartupServer(const GameSessionConfiguration_t& config,
+    void ITemplatePlugin::Hook_StartupServer(const GameSessionConfiguration_t& config,
                                             ISource2WorldSession*, const char*)
     {
         if (!done)
@@ -158,18 +158,18 @@ namespace TemplatePlugin
         }
     }
 
-    int TemplatePlugin::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)
+    int ITemplatePlugin::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)
     {
         ExecuteOnce(shared::g_pGameEventManager = META_IFACEPTR(IGameEventManager2));
         RETURN_META_VALUE(MRES_IGNORED, 0);
     }
 
-    const char* TemplatePlugin::GetAuthor() { return "Slynx"; }
-    const char* TemplatePlugin::GetName() { return "Template"; }
-    const char* TemplatePlugin::GetDescription() { return "Template Metamod plugin for CS2 servers."; }
-    const char* TemplatePlugin::GetURL() { return "https://slynxdev.cz"; }
-    const char* TemplatePlugin::GetLicense() { return "GPLv3"; }
-    const char* TemplatePlugin::GetVersion() { return TEMPLATEPLUGIN_VERSION; }
-    const char* TemplatePlugin::GetDate() { return __DATE__; }
-    const char* TemplatePlugin::GetLogTag() { return "Template"; }
+    const char* ITemplatePlugin::GetAuthor() { return "Slynx"; }
+    const char* ITemplatePlugin::GetName() { return "TemplatePlugin"; }
+    const char* ITemplatePlugin::GetDescription() { return "TemplatePlugin Metamod plugin for CS2 servers."; }
+    const char* ITemplatePlugin::GetURL() { return "https://slynxdev.cz"; }
+    const char* ITemplatePlugin::GetLicense() { return "GPLv3"; }
+    const char* ITemplatePlugin::GetVersion() { return TEMPLATEPLUGIN_VERSION; }
+    const char* ITemplatePlugin::GetDate() { return __DATE__; }
+    const char* ITemplatePlugin::GetLogTag() { return "TemplatePlugin"; }
 }
