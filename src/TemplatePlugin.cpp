@@ -73,8 +73,6 @@ namespace TemplatePlugin
             return false;
 
         Tasks::Init();
-        Detours::InitHooks();
-        RayTrace::Initialize();
         auto gamedata_path = std::string(Paths::GetRootDirectory() + "/gamedata.json");
         shared::g_pGameConfig = new CGameConfig(gamedata_path);
         char conf_error[255] = "";
@@ -108,16 +106,16 @@ namespace TemplatePlugin
 
     bool TemplatePlugin::Unload(char* error, size_t maxlen)
     {
+        Detours::ShutdownHooks();
+        Detours::Shutdown();
+        shared::g_pEntitySystem->RemoveListenerEntity(&Detours::entityListener);
+        Tasks::Shutdown();
+        
         SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
                                &TemplatePlugin::Hook_GameFrame, false);
         SH_REMOVE_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
                        SH_MEMBER(this, &TemplatePlugin::Hook_StartupServer), true);
         SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
-
-        Detours::ShutdownHooks();
-        Detours::Shutdown();
-        shared::g_pEntitySystem->RemoveListenerEntity(&Detours::entityListener);
-        Tasks::Shutdown();
 
         META_LOG(&g_Template, "[Template] <<< Unload() success!\n");
 
@@ -154,6 +152,8 @@ namespace TemplatePlugin
         {
             shared::g_pEntitySystem = GameEntitySystem();
             shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
+            Detours::InitHooks();
+            RayTrace::Initialize();
             done = true;
         }
     }
