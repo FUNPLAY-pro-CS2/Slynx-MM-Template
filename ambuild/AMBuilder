@@ -42,6 +42,11 @@ for sdk_target in MMSPlugin.sdk_targets:
       os.path.join(projectPath, 'vendor')
   ]
 
+  binary.compiler.postlink += [
+    os.path.join(builder.sourcePath, 'vendor', 'funchook', 'lib', target_folder, 'libfunchook.a'),
+    os.path.join(builder.sourcePath, 'vendor', 'funchook', 'lib', target_folder, 'libdistorm.a'),
+  ]
+
   src_dir = os.path.join(projectPath, "src")
   for root, dirs, files in os.walk(src_dir):
       for f in files:
