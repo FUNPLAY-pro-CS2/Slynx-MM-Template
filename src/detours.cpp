@@ -123,6 +123,8 @@ namespace TemplatePlugin {
             }
         }
 
+        void EventManager::FireGameEvent(IGameEvent* pEvent) {}
+
         void RegisterEntityListener(EntityEventHandler handler, EntityEventType type) {
             switch (type) {
                 case EntityEventType::ENTITY_SPAWNED:
