@@ -31,6 +31,11 @@ namespace TemplatePlugin::Detours
         HookMode mode;
     };
 
+    class EventManager : public IGameEventListener2
+    {
+        void FireGameEvent(IGameEvent* pEvent) override;
+    };
+
     static std::unordered_map<std::string, std::vector<SignatureEntry>> signatureHooks;
     static std::mutex signatureHooksMutex;
     static std::vector<funchook_t*> hookHandles;
