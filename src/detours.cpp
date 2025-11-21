@@ -22,6 +22,7 @@ namespace TemplatePlugin {
         std::vector<std::unique_ptr<ConCommand> > registeredCommands;
         static std::unordered_map<std::string, std::vector<CommandEntry> > consoleListeners;
         static std::unordered_map<std::string, std::vector<EventEntry> > gameEvents;
+        EventManager eventManager;
         static std::vector<IGameEvent *> eventStack;
         static std::vector<EntityEventHandler> entitySpawnedListeners;
         static std::vector<EntityEventHandler> entityCreatedListeners;
@@ -116,6 +117,10 @@ namespace TemplatePlugin {
 
         void RegisterGameEvent(const std::string &name, GameEventHandler handler, HookMode mode) {
             gameEvents[name].push_back({handler, mode});
+            if (!shared::g_pGameEventManager->FindListener(&eventManager, name.c_str()))
+            {
+                shared::g_pGameEventManager->AddListener(&eventManager, name.c_str(), true);
+            }
         }
 
         void RegisterEntityListener(EntityEventHandler handler, EntityEventType type) {
