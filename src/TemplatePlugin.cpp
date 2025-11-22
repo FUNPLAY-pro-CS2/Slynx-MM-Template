@@ -16,6 +16,8 @@
 #include <fstream>
 #include <gameconfig.h>
 #include <regex>
+#include <listeners/Listeners.h>
+
 #include "EntityData.h"
 #include "PlayersData.h"
 #include "tasks.h"
@@ -87,15 +89,7 @@ namespace TemplatePlugin
             return false;
 
         g_SMAPI->AddListener(this, this);
-
-        SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                            &ITemplatePlugin::Hook_GameFrame, false);
-        SH_ADD_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                    SH_MEMBER(this, &ITemplatePlugin::Hook_StartupServer), true);
-        auto pCGameEventManagerVTable = DynLibUtils::CModule(shared::g_pServer).
-                                        GetVirtualTableByName("CGameEventManager").RCast<IGameEventManager2*>();
-        g_iLoadEventsFromFileId = SH_ADD_DVPHOOK(IGameEventManager2, LoadEventsFromFile, pCGameEventManagerVTable,
-                                                 SH_MEMBER(this, &ITemplatePlugin::Hook_LoadEventsFromFile), false);
+        Listeners::InitListeners();
 
         g_pCVar = shared::g_pCVar;
         ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
@@ -106,16 +100,11 @@ namespace TemplatePlugin
 
     bool ITemplatePlugin::Unload(char* error, size_t maxlen)
     {
+        Listeners::DestructListeners();
         Detours::ShutdownHooks();
         Detours::Shutdown();
         shared::g_pEntitySystem->RemoveListenerEntity(&Detours::entityListener);
         Tasks::Shutdown();
-        
-        SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, this,
-                               &ITemplatePlugin::Hook_GameFrame, false);
-        SH_REMOVE_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                       SH_MEMBER(this, &ITemplatePlugin::Hook_StartupServer), true);
-        SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
 
         META_LOG(&g_iPlugin, "<<< Unload() success!\n");
 
