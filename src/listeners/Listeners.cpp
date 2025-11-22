@@ -7,6 +7,7 @@
 #include <RayTrace.h>
 #include <Shared.h>
 #include <tasks.h>
+#include <commands/Commands.h>
 #include <dynlibutils/module.h>
 #include <events/Events.h>
 #include <schema/CGameRules.h>
@@ -69,6 +70,7 @@ namespace TemplatePlugin::Listeners {
         {
             shared::g_pEntitySystem = GameEntitySystem();
             shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
+            Commands::InitCommands();
             Events::InitEvents();
             Detours::InitHooks();
             RayTrace::Initialize();
