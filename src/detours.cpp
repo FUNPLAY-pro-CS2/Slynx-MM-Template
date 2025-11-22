@@ -22,7 +22,7 @@ namespace TemplatePlugin {
         std::vector<std::unique_ptr<ConCommand> > registeredCommands;
         static std::unordered_map<std::string, std::vector<CommandEntry> > consoleListeners;
         static std::unordered_map<std::string, std::vector<EventEntry> > gameEvents;
-        EventManager eventManager;
+        static EventManager eventManager;
         static std::vector<IGameEvent *> eventStack;
         static std::vector<EntityEventHandler> entitySpawnedListeners;
         static std::vector<EntityEventHandler> entityCreatedListeners;
@@ -337,6 +337,7 @@ namespace TemplatePlugin {
 
         void Shutdown() {
             consoleListeners.clear();
+            globals::gameEventManager->RemoveListener(&eventManager);
             gameEvents.clear();
             entitySpawnedListeners.clear();
             entityCreatedListeners.clear();
