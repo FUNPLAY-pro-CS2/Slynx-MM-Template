@@ -11,6 +11,10 @@
 #include <events/Events.h>
 #include <schema/CGameRules.h>
 
+class GameSessionConfiguration_t
+{
+};
+
 namespace TemplatePlugin::Listeners {
     SourceHooks sourceHooks;
 

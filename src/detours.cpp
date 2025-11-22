@@ -337,7 +337,7 @@ namespace TemplatePlugin {
 
         void Shutdown() {
             consoleListeners.clear();
-            globals::gameEventManager->RemoveListener(&eventManager);
+            shared::g_pGameEventManager->RemoveListener(&eventManager);
             gameEvents.clear();
             entitySpawnedListeners.clear();
             entityCreatedListeners.clear();

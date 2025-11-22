@@ -16,6 +16,7 @@
 #include <type_traits>
 #include "detourtypes.h"
 #include "entitysystem.h"
+#include "dynlibutils/module.h"
 
 namespace TemplatePlugin::Detours
 {
