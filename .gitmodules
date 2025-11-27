@@ -1,6 +1,3 @@
 [submodule "vendor/funchook"]
 	path = vendor/funchook
 	url = https://github.com/kubo/funchook
-[submodule "vendor/fmt"]
-	path = vendor/fmt
-	url = https://github.com/fmtlib/fmt

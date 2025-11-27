@@ -12,30 +12,16 @@
 
 namespace TemplatePlugin::Prints
 {
-    std::string ReplaceColorTags(const std::string& input)
-    {
-        static const std::vector<std::pair<std::string, std::string>> tags = {
-            {"{DEFAULT}", "\x01"},
-            {"{WHITE}", "\x01"},
-            {"{DARKRED}", "\x02"},
-            {"{LIGHTPURPLE}", "\x03"},
-            {"{GREEN}", "\x04"},
-            {"{OLIVE}", "\x05"},
-            {"{LIME}", "\x06"},
-            {"{RED}", "\x07"},
-            {"{GREY}", "\x08"},
-            {"{GRAY}", "\x08"},
-            {"{YELLOW}", "\x09"},
-            {"{SILVER}", "\x0A"},
-            {"{BLUE}", "\x0B"},
-            {"{DARKBLUE}", "\x0C"},
-            {"{ORANGE}", "\x10"},
-            {"{PURPLE}", "\x0E"}
+    std::string ReplaceColorTags(const std::string &input) {
+        static const std::vector<std::pair<std::string, std::string> > tags = {
+            {"[[DEFAULT]]", "\x01"}, {"[[DARKRED]]", "\x02"}, {"[[LIGHTPURPLE]]", "\x03"}, {"[[GREEN]]", "\x04"},
+            {"[[OLIVE]]", "\x05"}, {"[[LIME]]", "\x06"}, {"[[RED]]", "\x07"}, {"[[GREY]]", "\x08"},
+            {"[[YELLOW]]", "\x09"}, {"[[SILVER]]", "\x0A"}, {"[[BLUE]]", "\x0B"}, {"[[DARKBLUE]]", "\x0C"},
+            {"[[ORANGE]]", "\x10"}, {"[[PURPLE]]", "\x0E"}
         };
 
         std::string result = input;
-        for (const auto& [tag, code] : tags)
-        {
+        for (const auto &[tag, code]: tags) {
             size_t pos;
             while ((pos = result.find(tag)) != std::string::npos)
                 result.replace(pos, tag.length(), code);
@@ -44,9 +30,9 @@ namespace TemplatePlugin::Prints
         return result;
     }
 
-    std::string ReplaceFormatTags(const std::string& input)
-    {
+    std::string ReplaceFormatTags(const std::string &input) {
         std::string result = ReplaceColorTags(input);
+
         return result;
     }
 

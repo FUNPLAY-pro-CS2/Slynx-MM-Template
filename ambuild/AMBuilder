@@ -39,7 +39,9 @@ for sdk_target in MMSPlugin.sdk_targets:
 
   binary.compiler.cxxincludes += [
       os.path.join(projectPath, 'src'),
-      os.path.join(projectPath, 'vendor')
+      os.path.join(projectPath, 'vendor'),
+      os.path.join(projectPath, 'vendor', 'funchook', 'include'),
+      os.path.join(projectPath, 'vendor', 'fmt', 'include')
   ]
 
   target_folder = 'Debug' if builder.options.debug else 'Release'
@@ -47,12 +49,14 @@ for sdk_target in MMSPlugin.sdk_targets:
     binary.compiler.postlink += [
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'libfunchook.a'),
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'libdistorm.a'),
+      os.path.join(projectPath, 'vendor', 'fmt', 'lib', target_folder, 'libfmt.a')
     ]
   elif binary.compiler.target.platform == 'windows':
     binary.compiler.postlink += [
       os.path.join('psapi.lib'),
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'funchook.lib'),
       os.path.join(projectPath, 'vendor', 'funchook', 'lib', target_folder, 'distorm.lib'),
+      os.path.join(projectPath, 'vendor', 'fmt', 'lib', target_folder, 'fmt.lib'),
       os.path.join(sdk['path'], 'lib', 'public', 'win64', 'steam_api64.lib')
     ]
 
