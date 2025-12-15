@@ -289,6 +289,11 @@ class MMSPluginConfig(object):
       os.path.join(sdk['path'], 'entity2', 'entitykeyvalues.cpp'),
       os.path.join(sdk['path'], 'tier1', 'convar.cpp'),
       os.path.join(sdk['path'], 'tier1', 'keyvalues3.cpp'),
+      os.path.join(self.mms_root, 'core', 'sourcehook', 'sourcehook.cpp'),
+      os.path.join(self.mms_root, 'core', 'sourcehook', 'sourcehook_impl_chookidman.cpp'),
+      os.path.join(self.mms_root, 'core', 'sourcehook', 'sourcehook_impl_chookmaninfo.cpp'),
+      os.path.join(self.mms_root, 'core', 'sourcehook', 'sourcehook_impl_cvfnptr.cpp'),
+      os.path.join(self.mms_root, 'core', 'sourcehook', 'sourcehook_impl_cproto.cpp')
     ]
 
     SdkHelpers.configureCxx(context, binary, sdk)

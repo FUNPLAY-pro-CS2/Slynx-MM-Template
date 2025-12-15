@@ -11,6 +11,7 @@
 #include <gameconfig.h>
 #include <igameeventsystem.h>
 #include "schema/cgameresourceserviceserver.h"
+#include <sourcehook/sourcehook.h>
 
 class CGameEntitySystem;
 
@@ -32,6 +33,9 @@ namespace TemplatePlugin::shared
     extern CGameResourceService* g_pGameResourceServiceServer;
     extern CGameConfig *g_pGameConfig;
 
+    extern SourceHook::ISourceHook *source_hook;
+    extern int source_hook_pluginid;
+
     CGlobalVars* getGlobalVars();
     extern const char *GetMapName();
     extern void ServerCommand(const char *command);
@@ -45,3 +49,8 @@ namespace TemplatePlugin::shared
     extern float g_flLastTickedTime;
     extern bool g_bHasTicked;
 }
+
+#undef SH_GLOB_SHPTR
+#define SH_GLOB_SHPTR TemplatePlugin::shared::source_hook
+#undef SH_GLOB_PLUGPTR
+#define SH_GLOB_PLUGPTR TemplatePlugin::shared::source_hook_pluginid

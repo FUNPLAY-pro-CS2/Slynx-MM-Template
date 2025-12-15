@@ -6,6 +6,8 @@
 #include <icvar.h>
 #include <iserver.h>
 #include <schemasystem.h>
+#include <sourcehook/sourcehook.h>
+#include <sourcehook/sourcehook_impl.h>
 
 namespace TemplatePlugin::shared
 {
@@ -24,6 +26,11 @@ namespace TemplatePlugin::shared
     CGlobalVars *g_pGlobalVars = nullptr;
     CGameResourceService *g_pGameResourceServiceServer = nullptr;
     CGameConfig *g_pGameConfig = nullptr;
+
+    SourceHook::Impl::CSourceHookImpl source_hook_impl;
+    SourceHook::ISourceHook* source_hook = &source_hook_impl;
+
+    int source_hook_pluginid = 0;
 
     CGlobalVars *getGlobalVars() {
         INetworkGameServer *server = g_pNetworkServerService->GetIGameServer();

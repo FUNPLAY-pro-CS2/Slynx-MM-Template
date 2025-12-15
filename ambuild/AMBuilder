@@ -67,6 +67,7 @@ for sdk_target in MMSPlugin.sdk_targets:
               binary.sources += [os.path.join(root, f)]
 
   binary.sources += [os.path.join(projectPath, 'vendor', 'dynlibutils', 'module.cpp')]
+
   if cxx.target.arch == 'x86':
     binary.sources += ['sourcehook/sourcehook_hookmangen.cpp']
 
