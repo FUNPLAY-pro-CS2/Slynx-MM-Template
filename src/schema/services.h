@@ -38,25 +38,25 @@ namespace TemplatePlugin {
     struct CSPerRoundStats_t {
         DECLARE_SCHEMA_CLASS_INLINE(CSPerRoundStats_t)
 
-        SCHEMA_FIELD_RAW(int32_t, m_iKills);
-        SCHEMA_FIELD_RAW(int32_t, m_iDeaths);
-        SCHEMA_FIELD_RAW(int32_t, m_iAssists);
-        SCHEMA_FIELD_RAW(int32_t, m_iDamage);
-        SCHEMA_FIELD_RAW(int32_t, m_iHeadShotKills);
-        SCHEMA_FIELD_RAW(int32_t, m_iUtilityDamage);
-        SCHEMA_FIELD_RAW(int32_t, m_iEnemiesFlashed);
-        SCHEMA_FIELD_RAW(int32_t, m_iObjective);
-        SCHEMA_FIELD_RAW(int32_t, m_iCashEarned);
-        SCHEMA_FIELD_RAW(int32_t, m_iEquipmentValue);
-        SCHEMA_FIELD_RAW(int32_t, m_iKillReward);
-        SCHEMA_FIELD_RAW(int32_t, m_iMoneySaved);
+        SCHEMA_FIELD(int32_t, m_iKills);
+        SCHEMA_FIELD(int32_t, m_iDeaths);
+        SCHEMA_FIELD(int32_t, m_iAssists);
+        SCHEMA_FIELD(int32_t, m_iDamage);
+        SCHEMA_FIELD(int32_t, m_iHeadShotKills);
+        SCHEMA_FIELD(int32_t, m_iUtilityDamage);
+        SCHEMA_FIELD(int32_t, m_iEnemiesFlashed);
+        SCHEMA_FIELD(int32_t, m_iObjective);
+        SCHEMA_FIELD(int32_t, m_iCashEarned);
+        SCHEMA_FIELD(int32_t, m_iEquipmentValue);
+        SCHEMA_FIELD(int32_t, m_iKillReward);
+        SCHEMA_FIELD(int32_t, m_iMoneySaved);
     };
 
     struct CSMatchStats_t : public CSPerRoundStats_t {
     public:
         DECLARE_SCHEMA_CLASS_INLINE(CSMatchStats_t)
 
-        SCHEMA_FIELD_RAW(int32_t, m_iEntryWins);
+        SCHEMA_FIELD(int32_t, m_iEntryWins);
     };
 
     class CPlayerControllerComponent {

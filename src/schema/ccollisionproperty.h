@@ -11,7 +11,7 @@ namespace TemplatePlugin {
     {
         DECLARE_SCHEMA_CLASS_INLINE(VPhysicsCollisionAttribute_t)
 
-        SCHEMA_FIELD_RAW(uint8, m_nCollisionGroup)
+        SCHEMA_FIELD(uint8, m_nCollisionGroup)
         SCHEMA_FIELD(uint64_t, m_nInteractsAs)
         SCHEMA_FIELD(uint64_t, m_nInteractsWith)
         SCHEMA_FIELD(uint64_t, m_nInteractsExclude)
@@ -26,7 +26,7 @@ namespace TemplatePlugin {
         SCHEMA_FIELD(VPhysicsCollisionAttribute_t, m_collisionAttribute)
         SCHEMA_FIELD(SolidType_t, m_nSolidType)
         SCHEMA_FIELD(uint8, m_usSolidFlags)
-        SCHEMA_FIELD_RAW(uint8, m_CollisionGroup)
+        SCHEMA_FIELD(uint8, m_CollisionGroup)
         SCHEMA_FIELD(Vector, m_vecMins)
         SCHEMA_FIELD(Vector, m_vecMaxs)
     };

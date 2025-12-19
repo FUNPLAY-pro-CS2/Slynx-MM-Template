@@ -79,7 +79,7 @@ namespace TemplatePlugin {
 	{
 	public:
 	    DECLARE_SCHEMA_CLASS_INLINE(CAttributeList);
-	    SCHEMA_FIELD_REF(CUtlVector<CEconItemAttribute>, CAttributeList, m_Attributes)
+	    SCHEMA_FIELD_POINTER(CUtlVector<CEconItemAttribute>, m_Attributes)
 	    SCHEMA_FIELD(CAttributeManager*, m_pManager);
 	};
 

@@ -253,12 +253,7 @@ namespace TemplatePlugin {
             });
         }
 
-        PlayerConnectedState GetConnectedState() const { return (m_iConnected_prop)m_iConnected; }
-
-        std::string PlayerName()
-        {
-            return std::string(GetPlayerName());
-        }
+        PlayerConnectedState GetConnectedState() { return m_iConnected(); }
 
         CSPlayerState GetPawnState()
         {

@@ -434,21 +434,21 @@ namespace TemplatePlugin {
     public:
         DECLARE_SCHEMA_CLASS_INLINE(CGlowProperty)
 
-        SCHEMA_FIELD_RAW(Vector, m_fGlowColor)
+        SCHEMA_FIELD(Vector, m_fGlowColor)
 
-        SCHEMA_FIELD_RAW(int, m_iGlowType)
+        SCHEMA_FIELD(int, m_iGlowType)
 
-        SCHEMA_FIELD_RAW(int, m_iGlowTeam)
+        SCHEMA_FIELD(int, m_iGlowTeam)
 
-        SCHEMA_FIELD_RAW(int, m_nGlowRange)
+        SCHEMA_FIELD(int, m_nGlowRange)
 
-        SCHEMA_FIELD_RAW(int, m_nGlowRangeMin)
+        SCHEMA_FIELD(int, m_nGlowRangeMin)
 
-        SCHEMA_FIELD_RAW(Color, m_glowColorOverride)
+        SCHEMA_FIELD(Color, m_glowColorOverride)
 
-        SCHEMA_FIELD_RAW(bool, m_bFlashing)
+        SCHEMA_FIELD(bool, m_bFlashing)
 
-        SCHEMA_FIELD_RAW(bool, m_bGlowing)
+        SCHEMA_FIELD(bool, m_bGlowing)
     };
 
     struct TraceHistory {
