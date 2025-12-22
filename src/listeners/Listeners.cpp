@@ -27,8 +27,8 @@ namespace TemplatePlugin::Listeners {
     int g_iLoadEventsFromFileId = -1;
 
     void InitListeners() {
-        SH_ADD_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, &sourceHooks,
-                            &SourceHooks::Hook_GameFrame, false);
+        SH_ADD_HOOK(IServerGameDLL, GameFrame, shared::g_pServer,
+                    SH_MEMBER(&sourceHooks,&SourceHooks::Hook_GameFrame), false);
         SH_ADD_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
                     SH_MEMBER(&sourceHooks, &SourceHooks::Hook_StartupServer), true);
         auto pCGameEventManagerVTable = DynLibUtils::CModule(shared::g_pServer).
@@ -38,10 +38,10 @@ namespace TemplatePlugin::Listeners {
     }
 
     void DestructListeners() {
-        SH_REMOVE_HOOK_MEMFUNC(IServerGameDLL, GameFrame, shared::g_pServer, &sourceHooks,
-                               &SourceHooks::Hook_GameFrame, false);
+        SH_REMOVE_HOOK(IServerGameDLL, GameFrame, shared::g_pServer,
+                    SH_MEMBER(&sourceHooks,&SourceHooks::Hook_GameFrame), false);
         SH_REMOVE_HOOK(INetworkServerService, StartupServer, shared::g_pNetworkServerService,
-                       SH_MEMBER(&sourceHooks, &SourceHooks::Hook_StartupServer), true);
+                    SH_MEMBER(&sourceHooks, &SourceHooks::Hook_StartupServer), true);
         SH_REMOVE_HOOK_ID(g_iLoadEventsFromFileId);
     }
 
