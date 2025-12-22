@@ -13,6 +13,8 @@
 #include <Shared.h>
 #include <TemplatePlugin.h>
 
+#include "log.h"
+
 namespace TemplatePlugin {
     SH_DECL_HOOK2(IGameEventManager2, FireEvent, SH_NOATTRIB, 0, bool, IGameEvent*, bool);
     SH_DECL_HOOK3_void(ICvar, DispatchConCommand, SH_NOATTRIB, 0, ConCommandRef, const CCommandContext&,
@@ -351,12 +353,12 @@ namespace TemplatePlugin {
 
                 int rc = funchook_uninstall(hook, 0);
                 if (rc != 0) {
-                    META_LOG(&g_iPlugin, "Failed to uninstall hook: %i", rc);
+                    FP_ERROR("Failed to uninstall hook: {}", rc);
                 }
 
                 rc = funchook_destroy(hook);
                 if (rc != 0) {
-                    META_LOG(&g_iPlugin, "Failed to destroy hook: %i", rc);
+                    FP_ERROR("Failed to destroy hook: {}", rc);
                 }
             }
             hookHandles.clear();

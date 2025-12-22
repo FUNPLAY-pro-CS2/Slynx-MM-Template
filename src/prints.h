@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include "schema/CCSPlayerController.h"
-#include "fmt/format.h"
+#include "log.h"
 
 namespace TemplatePlugin::Prints
 {

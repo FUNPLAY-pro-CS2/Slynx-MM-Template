@@ -5,6 +5,8 @@
 #include "Shared.h"
 #include "game_system.h"
 #include <tier0/vprof.h>
+
+#include "log.h"
 #include "dynlibutils/module.h"
 
 CBaseGameSystemFactory** CBaseGameSystemFactory::sm_pFirst = nullptr;
@@ -22,7 +24,7 @@ bool InitGameSystems()
     auto result = libserver.FindPattern(TemplatePlugin::shared::g_pGameConfig->GetSignature("IGameSystem_InitAllSystems_pFirst"));
     if (!result)
     {
-        META_LOG(&TemplatePlugin::g_iPlugin, "<<< Failed to find IGameSystem_InitAllSystems_pFirst!\n");
+        FP_ERROR("Failed to find IGameSystem_InitAllSystems_pFirst!");
         return false;
     }
 

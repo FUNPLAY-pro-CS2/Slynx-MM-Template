@@ -9,6 +9,7 @@
 #include "dynlibutils/memaddr.h"
 #include "dynlibutils/module.h"
 #include "colors.h"
+#include "log.h"
 
 namespace TemplatePlugin::RayTrace
 {
@@ -27,14 +28,13 @@ namespace TemplatePlugin::RayTrace
 
         if (!pCNavPhysicsInterfaceVTable)
         {
-            META_LOG(&g_iPlugin, "Failed to find CNavPhysicsInterface vtable!\n");
+            FP_ERROR("Failed to find CNavPhysicsInterface vtable!");
             return false;
         }
 
         auto table = static_cast<void**>(pCNavPhysicsInterfaceVTable);
         s_TraceShape = reinterpret_cast<TraceShapeFn>(table[shared::g_pGameConfig->GetOffset("CNavPhysicsInterface_TraceShape")]);
 
-        META_LOG(&g_iPlugin, "TraceShape resolved at %p", s_TraceShape);
         return true;
     }
 

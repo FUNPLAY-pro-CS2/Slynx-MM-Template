@@ -16,6 +16,7 @@
 #include <type_traits>
 #include "detourtypes.h"
 #include "entitysystem.h"
+#include "log.h"
 #include "dynlibutils/module.h"
 
 namespace TemplatePlugin::Detours
@@ -205,7 +206,7 @@ namespace TemplatePlugin::Detours
         void* addr = FindModuleSignature(std::move(module), sigName.c_str());
         if (!addr)
         {
-            META_LOG(&g_iPlugin, "Failed to find signature for '%s'", sigName.c_str());
+            FP_ERROR("Failed to find signature for '{}'", sigName);
             return;
         }
 
@@ -228,7 +229,7 @@ namespace TemplatePlugin::Detours
             ) != 0 ||
             funchook_install(hook, 0) != 0)
         {
-            META_LOG(&g_iPlugin, "Failed to hook '%s'", sigName.c_str());
+            FP_ERROR("Failed to hook '{}'", sigName);
             return;
         }
 

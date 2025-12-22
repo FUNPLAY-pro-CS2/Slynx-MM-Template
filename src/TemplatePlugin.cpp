@@ -19,9 +19,13 @@
 #include <listeners/Listeners.h>
 
 #include "EntityData.h"
+#include "log.h"
 #include "PlayersData.h"
 #include "tasks.h"
 #include "schema/CGameRules.h"
+
+#define VERSION_STRING SEMVER " @ " GITHUB_SHA
+#define BUILD_TIMESTAMP __DATE__ " " __TIME__
 
 PLUGIN_EXPOSE(Template, TemplatePlugin::g_iPlugin);
 
@@ -81,7 +85,7 @@ namespace TemplatePlugin
 
         if (!shared::g_pGameConfig->Init(conf_error, sizeof(conf_error)))
         {
-            META_LOG(&g_iPlugin, "Could not read '%s'. Error: %s", gamedata_path.c_str(), conf_error);
+            FP_ERROR("Could not read '{}'. Error: {}", gamedata_path, conf_error);
             return false;
         }
 
@@ -94,7 +98,7 @@ namespace TemplatePlugin
         g_pCVar = shared::g_pCVar;
         ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
-        META_LOG(&g_iPlugin, "<<< Load() success!\n");
+        FP_INFO("<<< Load() success! >>>");
         return true;
     }
 
@@ -106,7 +110,7 @@ namespace TemplatePlugin
         shared::g_pEntitySystem->RemoveListenerEntity(&Detours::entityListener);
         Tasks::Shutdown();
 
-        META_LOG(&g_iPlugin, "<<< Unload() success!\n");
+        FP_INFO("<<< Unload() success! >>>");
 
         return true;
     }
@@ -158,7 +162,7 @@ namespace TemplatePlugin
     const char* ITemplatePlugin::GetDescription() { return "TemplatePlugin Metamod plugin for CS2 servers."; }
     const char* ITemplatePlugin::GetURL() { return "https://slynxdev.cz"; }
     const char* ITemplatePlugin::GetLicense() { return "GPLv3"; }
-    const char* ITemplatePlugin::GetVersion() { return TEMPLATEPLUGIN_VERSION; }
-    const char* ITemplatePlugin::GetDate() { return __DATE__; }
+    const char* ITemplatePlugin::GetVersion() { return VERSION_STRING; }
+    const char* ITemplatePlugin::GetDate() { return BUILD_TIMESTAMP; }
     const char* ITemplatePlugin::GetLogTag() { return "TemplatePlugin"; }
 }
