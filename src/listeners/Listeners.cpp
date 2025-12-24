@@ -47,7 +47,7 @@ namespace TemplatePlugin::Listeners {
 
     void SourceHooks::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
     {
-        Tasks::Tick();
+        Tasks::Tick(simulating);
         if (!shared::getGlobalVars())
             return;
 
