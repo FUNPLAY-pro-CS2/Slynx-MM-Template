@@ -57,8 +57,6 @@ namespace TemplatePlugin::shared
     int GetTickCount() { return getGlobalVars()->tickcount; }
     float GetGameFrameTime() { return getGlobalVars()->frametime; }
 
-    double g_flUniversalTime = 0.0;
-    float g_flLastTickedTime = 0.0f;
     bool g_bHasTicked = false;
     bool g_bDetoursLoaded = false;
 }

@@ -21,7 +21,7 @@ TemplatePlugin
             pTimer->Initialize();
 
             // Timer execute
-            if (pTimer->GetLastExecute() + pTimer->GetInterval() <= shared::g_flUniversalTime && !pTimer->Execute(true))
+            if (pTimer->GetLastExecute() + pTimer->GetInterval() <= universal_time && !pTimer->Execute(true))
                 iterator = g_timers.erase(iterator);
             else
                 iterator++;
@@ -55,7 +55,7 @@ TemplatePlugin
     bool CTimer::Execute(bool bAutomaticExecute)
     {
         SetInterval(m_func());
-        SetLastExecute(shared::g_flUniversalTime);
+        SetLastExecute(universal_time);
 
         bool bContinue = GetInterval() >= 0;
 

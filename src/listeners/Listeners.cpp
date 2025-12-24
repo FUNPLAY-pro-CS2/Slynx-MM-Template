@@ -51,10 +51,6 @@ namespace TemplatePlugin::Listeners {
         if (!shared::getGlobalVars())
             return;
 
-        if (simulating && shared::g_bHasTicked)
-            shared::g_flUniversalTime += shared::getGlobalVars()->curtime - shared::g_flLastTickedTime;
-
-        shared::g_flLastTickedTime = shared::getGlobalVars()->curtime;
         shared::g_bHasTicked = true;
 
         if (CCSGameRules::FindGameRules())

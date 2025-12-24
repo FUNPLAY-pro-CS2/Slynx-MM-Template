@@ -9,6 +9,8 @@
 #include <platform.h>
 #include <Shared.h>
 
+#include "tasks.h"
+
 // clang-format off
 #define TIMERFLAG_NONE		(0)
 #define TIMERFLAG_MAP		(1 << 0) // Only valid for this map, cancels on map change
@@ -35,7 +37,7 @@ namespace TemplatePlugin {
         void Initialize()
         {
             if (m_flLastExecute == -1)
-                m_flLastExecute = shared::g_flUniversalTime;
+                m_flLastExecute = universal_time;
         }
 
     private:

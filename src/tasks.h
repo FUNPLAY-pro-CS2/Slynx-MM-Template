@@ -14,6 +14,10 @@ namespace TemplatePlugin {
         TIMER_FLAG_NO_MAPCHANGE = 1 << 1,
     };
 
+    extern double universal_time;
+    extern double last_tick_time;
+    extern double timer_next_think;
+
     class Timer {
     public:
         Timer(float interval, double execTime, TimerCallback callback, int flags);

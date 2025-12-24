@@ -9,11 +9,11 @@
 #include <queue>
 
 namespace TemplatePlugin {
-    namespace {
-        double universal_time = 0.0;
-        double last_tick_time = 0.0;
-        double timer_next_think = 0.0;
+    double universal_time = 0.0;
+    double last_tick_time = 0.0;
+    double timer_next_think = 0.0;
 
+    namespace {
         std::vector<Timer *> once_off_timers;
         std::vector<Timer *> repeat_timers;
         std::mutex nextFrameMutex;

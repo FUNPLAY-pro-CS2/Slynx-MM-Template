@@ -45,8 +45,6 @@ namespace TemplatePlugin::shared
     extern int GetTickCount();
     extern float GetGameFrameTime();
 
-    extern double g_flUniversalTime;
-    extern float g_flLastTickedTime;
     extern bool g_bHasTicked;
     extern bool g_bDetoursLoaded;
 }
