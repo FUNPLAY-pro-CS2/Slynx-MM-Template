@@ -12,7 +12,6 @@
 #include "ctakedamageinfo.h"
 #include "virtual.h"
 #include "dynlibutils/module.h"
-#include "tier0/memdbgon.h"
 #include "Shared.h"
 
 namespace

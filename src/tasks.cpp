@@ -144,13 +144,17 @@ namespace TemplatePlugin {
     }
 
     void Tasks::RemoveMapChangeTimers() {
-        auto isMapTimer = [](Timer *t) {
-            bool remove = t->Flags & TIMER_FLAG_NO_MAPCHANGE;
-            if (remove) delete t;
-            return remove;
+        auto removeFrom = [](std::vector<Timer*>& list) {
+            for (int i = static_cast<int>(list.size()) - 1; i >= 0; --i) {
+                Timer* t = list[i];
+                if (t->Flags & TIMER_FLAG_NO_MAPCHANGE) {
+                    delete t;
+                    list.erase(list.begin() + i);
+                }
+            }
         };
 
-        std::__detail::__erase_nodes_if(once_off_timers, isMapTimer);
-        std::__detail::__erase_nodes_if(repeat_timers, isMapTimer);
+        removeFrom(once_off_timers);
+        removeFrom(repeat_timers);
     }
 }

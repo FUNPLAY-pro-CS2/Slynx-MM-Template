@@ -17,11 +17,13 @@
 #include <gameconfig.h>
 #include <regex>
 #include <listeners/Listeners.h>
-
 #include "EntityData.h"
 #include "log.h"
 #include "PlayersData.h"
 #include "tasks.h"
+#include "commands/Commands.h"
+#include "events/Events.h"
+#include "hooks/Hooks.h"
 #include "schema/CGameRules.h"
 
 #define VERSION_STRING SEMVER " @ " GITHUB_SHA
@@ -98,6 +100,18 @@ namespace TemplatePlugin
         g_pCVar = shared::g_pCVar;
         ConVar_Register(FCVAR_RELEASE | FCVAR_CLIENT_CAN_EXECUTE | FCVAR_GAMEDLL);
 
+        if (late)
+        {
+            shared::g_pEntitySystem = GameEntitySystem();
+            shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
+            Commands::InitCommands();
+            Events::InitEvents();
+            Hooks::InitHooks();
+            Detours::InitHooks();
+            RayTrace::Initialize();
+            shared::g_bDetoursLoaded = true;
+        }
+
         FP_INFO("<<< Load() success! >>>");
         return true;
     }
@@ -113,11 +127,6 @@ namespace TemplatePlugin
         FP_INFO("<<< Unload() success! >>>");
 
         return true;
-    }
-
-    void ITemplatePlugin::OnLevelShutdown()
-    {
-        Tasks::RemoveMapChangeTimers();
     }
 
     void ITemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)

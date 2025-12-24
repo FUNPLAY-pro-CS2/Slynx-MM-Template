@@ -62,11 +62,10 @@ namespace TemplatePlugin::Listeners {
                     CCSGameRules::FindGameRules()->m_flRestartRoundTime < shared::GetCurrentTime();
     }
 
-    static bool done = false;
     void SourceHooks::Hook_StartupServer(const GameSessionConfiguration_t& config,
                                             ISource2WorldSession*, const char*)
     {
-        if (!done)
+        if (!shared::g_bDetoursLoaded)
         {
             shared::g_pEntitySystem = GameEntitySystem();
             shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
@@ -74,8 +73,13 @@ namespace TemplatePlugin::Listeners {
             Events::InitEvents();
             Detours::InitHooks();
             RayTrace::Initialize();
-            done = true;
+            shared::g_bDetoursLoaded = true;
         }
+        if (shared::g_bHasTicked)
+        {
+            Tasks::RemoveMapChangeTimers();
+        }
+        shared::g_bHasTicked = false;
     }
 
     int SourceHooks::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)

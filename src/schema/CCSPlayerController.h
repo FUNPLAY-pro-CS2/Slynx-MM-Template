@@ -195,9 +195,6 @@ namespace TemplatePlugin {
 
         void TakeFakeDamage(CCSPlayerController* attacker, int damage)
         {
-            if (!CheckValid(true) || !attacker || !attacker->CheckValid())
-                return;
-
             static CBaseEntity_TakeDamageOld_t s_TakeDamageOld = nullptr;
 
             if (!s_TakeDamageOld)
@@ -211,23 +208,36 @@ namespace TemplatePlugin {
                 s_TakeDamageOld = addr;
             }
 
+            if (!CheckValid(true) || !attacker || !attacker->CheckValid())
+                return;
+
             auto* victimPawn = GetPlayerPawn();
             if (!victimPawn) return;
 
             auto* attackerPawn = attacker->GetPlayerPawn();
             if (!attackerPawn) return;
 
-            const size_t size = schema::GetClassSize("CTakeDamageInfo");
+            const size_t infoSize = schema::GetClassSize("CTakeDamageInfo");
+            const size_t resultSize = schema::GetClassSize("CTakeDamageResult");
 
-            void* memory = malloc(size);
-            if (!memory) return;
+            auto* infoMem = std::malloc(infoSize);
+            auto* resultMem = std::malloc(resultSize);
 
-            std::memset(memory, 0, size);
+            if (!infoMem || !resultMem)
+            {
+                std::free(infoMem);
+                std::free(resultMem);
+                return;
+            }
+
+            std::memset(infoMem, 0, infoSize);
+            std::memset(resultMem, 0, resultSize);
 
             CAttackerInfo attackerInfo(attacker);
-            std::memcpy(reinterpret_cast<std::uint8_t*>(memory) + 0x98, &attackerInfo, sizeof(CAttackerInfo));
+            std::memcpy(reinterpret_cast<std::uint8_t*>(infoMem) + 0x98, &attackerInfo, sizeof(CAttackerInfo));
 
-            auto* info = reinterpret_cast<CTakeDamageInfo*>(memory);
+            auto* info = reinterpret_cast<CTakeDamageInfo*>(infoMem);
+            auto* result = reinterpret_cast<CTakeDamageResult*>(resultMem);
 
             info->m_hInflictor() = attackerPawn->GetHandle();
             info->m_hAttacker() = attackerPawn->GetHandle();
@@ -236,8 +246,18 @@ namespace TemplatePlugin {
             info->m_bInTakeDamageFlow() = true;
             info->m_bitsDamageType() = DMG_GENERIC;
 
-            s_TakeDamageOld(victimPawn, info, 0);
-            free(memory);
+            result->m_pOriginatingInfo() = info;
+            result->m_nDamageDealt() = damage;
+            result->m_nHealthLost() = damage;
+            result->m_flPreModifiedDamage() = static_cast<float>(damage);
+            result->m_nTotalledDamageDealt() = damage;
+            result->m_nTotalledHealthLost() = damage;
+            result->m_bWasDamageSuppressed() = false;
+
+            s_TakeDamageOld(victimPawn, info, result);
+
+            std::free(infoMem);
+            std::free(resultMem);
         }
 
         void Kick(ENetworkDisconnectionReason reason)

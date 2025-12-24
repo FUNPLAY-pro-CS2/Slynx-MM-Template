@@ -60,4 +60,5 @@ namespace TemplatePlugin::shared
     double g_flUniversalTime = 0.0;
     float g_flLastTickedTime = 0.0f;
     bool g_bHasTicked = false;
+    bool g_bDetoursLoaded = false;
 }

@@ -48,6 +48,7 @@ namespace TemplatePlugin::shared
     extern double g_flUniversalTime;
     extern float g_flLastTickedTime;
     extern bool g_bHasTicked;
+    extern bool g_bDetoursLoaded;
 }
 
 #undef SH_GLOB_SHPTR

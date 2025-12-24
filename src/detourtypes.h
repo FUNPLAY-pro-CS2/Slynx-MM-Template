@@ -13,6 +13,7 @@ namespace TemplatePlugin
 {
     class CBaseEntity;
     class CTakeDamageInfo;
+    class CTakeDamageResult;
 
     enum class HookResult
     {
@@ -161,7 +162,7 @@ namespace TemplatePlugin
     using EntityOutputHandler = std::function<HookResult(CEntityIOOutput*, const char*, CEntityInstance*,
                                                          CEntityInstance*, const CVariant*, float)>;
     using SignatureHandler = std::function<HookResult(DynamicHook* hook, HookMode mode)>;
-    using CBaseEntity_TakeDamageOld_t = int64_t(*)(CBaseEntity* pThis, CTakeDamageInfo* info, uint64_t unk3);
+    using CBaseEntity_TakeDamageOld_t = int64_t(*)(CBaseEntity* pThis, CTakeDamageInfo* info, CTakeDamageResult* unk3);
 
     struct SignatureEntry
     {
