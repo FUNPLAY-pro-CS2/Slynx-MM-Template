@@ -45,13 +45,6 @@ namespace TemplatePlugin
 {
     ITemplatePlugin g_iPlugin;
 
-    SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);
-    SH_DECL_HOOK3_void(INetworkServerService, StartupServer, SH_NOATTRIB, 0, const GameSessionConfiguration_t&,
-                       ISource2WorldSession*, const char*);
-    SH_DECL_HOOK2(IGameEventManager2, LoadEventsFromFile, SH_NOATTRIB, 0, int, const char*, bool);
-
-    int g_iLoadEventsFromFileId = -1;
-
     bool ITemplatePlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
     {
         PLUGIN_SAVEVARS();
@@ -127,39 +120,6 @@ namespace TemplatePlugin
         FP_INFO("<<< Unload() success! >>>");
 
         return true;
-    }
-
-    void ITemplatePlugin::Hook_GameFrame(bool simulating, bool bFirstTick, bool bLastTick)
-    {
-        Tasks::Tick();
-        if (!shared::getGlobalVars())
-            return;
-
-        shared::g_bHasTicked = true;
-
-        if (CCSGameRules::FindGameRules())
-            CCSGameRules::FindGameRules()->m_bGameRestart =
-                    CCSGameRules::FindGameRules()->m_flRestartRoundTime < shared::GetCurrentTime();
-    }
-
-    static bool done = false;
-    void ITemplatePlugin::Hook_StartupServer(const GameSessionConfiguration_t& config,
-                                            ISource2WorldSession*, const char*)
-    {
-        if (!done)
-        {
-            shared::g_pEntitySystem = GameEntitySystem();
-            shared::g_pEntitySystem->AddListenerEntity(&Detours::entityListener);
-            Detours::InitHooks();
-            RayTrace::Initialize();
-            done = true;
-        }
-    }
-
-    int ITemplatePlugin::Hook_LoadEventsFromFile(const char* filename, bool bSearchAll)
-    {
-        ExecuteOnce(shared::g_pGameEventManager = META_IFACEPTR(IGameEventManager2));
-        RETURN_META_VALUE(MRES_IGNORED, 0);
     }
 
     const char* ITemplatePlugin::GetAuthor() { return "Slynx"; }
