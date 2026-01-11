@@ -1,5 +1,5 @@
 "Metamod Plugin"
 {
-	"alias"	"NadeKingChallenges"
-	"file"	"addons/NadeKingChallenges/bin/${PROJECT_VDF_PLATFORM}/NadeKingChallenges"
+	"alias"	"TemplatePlugin"
+	"file"	"addons/TemplatePlugin/bin/${PROJECT_VDF_PLATFORM}/TemplatePlugin"
 }
