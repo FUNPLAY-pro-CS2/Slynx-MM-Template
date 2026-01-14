@@ -10,7 +10,7 @@
 #include "usermessages.pb.h"
 #include "tier0/memdbgon.h"
 
-namespace TemplatePlugin::Prints
+namespace Template::Prints
 {
     std::string ReplaceColorTags(const std::string &input) {
         static const std::vector<std::pair<std::string, std::string> > tags = {

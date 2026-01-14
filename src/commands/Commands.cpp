@@ -5,7 +5,7 @@
 #include "Commands.h"
 #include <detours.h>
 
-namespace TemplatePlugin::Commands
+namespace Template::Commands
 {
     void InitCommands()
     {

@@ -7,7 +7,7 @@
 #include "CBasePlayerPawn.h"
 #include "globaltypes.h"
 
-namespace TemplatePlugin {
+namespace Template {
     class CBaseGrenade : public CBaseModelEntity
     {
     public:

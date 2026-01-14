@@ -19,9 +19,9 @@ IEntityResourceManifest* m_exportResourceManifest = nullptr;
 // This mess is needed to get the pointer to sm_pFirst so we can insert game systems
 bool InitGameSystems()
 {
-    DynLibUtils::CModule libserver(TemplatePlugin::shared::g_pServer);
+    DynLibUtils::CModule libserver(Template::shared::g_pServer);
 
-    auto result = libserver.FindPattern(TemplatePlugin::shared::g_pGameConfig->GetSignature("IGameSystem_InitAllSystems_pFirst"));
+    auto result = libserver.FindPattern(Template::shared::g_pGameConfig->GetSignature("IGameSystem_InitAllSystems_pFirst"));
     if (!result)
     {
         FP_ERROR("Failed to find IGameSystem_InitAllSystems_pFirst!");

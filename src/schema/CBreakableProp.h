@@ -8,7 +8,7 @@
 #include "CBaseProp.h"
 
 namespace
-TemplatePlugin
+Template
 {
     class CPropDataComponent  : public CEntityComponent
     {

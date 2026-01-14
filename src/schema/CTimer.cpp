@@ -7,7 +7,7 @@
 #include <Shared.h>
 
 namespace
-TemplatePlugin
+Template
 {
     std::list<std::shared_ptr<CTimerBase>> g_timers;
 

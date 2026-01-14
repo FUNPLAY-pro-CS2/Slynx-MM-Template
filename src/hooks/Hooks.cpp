@@ -6,11 +6,9 @@
 #include "detours.h"
 #include "log.h"
 #include "PlayersData.h"
-#include "PluginData.h"
 #include "schema/CCSPlayerController.h"
-#include "schema/CUserCmd.h"
 
-namespace TemplatePlugin::Hooks
+namespace Template::Hooks
 {
     void InitHooks()
     {

@@ -1,5 +1,0 @@
-"Metamod Plugin"
-{
-	"alias"	"TemplatePlugin"
-	"file"	"addons/TemplatePlugin/bin/${PROJECT_VDF_PLATFORM}/TemplatePlugin"
-}

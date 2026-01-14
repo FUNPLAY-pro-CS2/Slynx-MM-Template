@@ -8,7 +8,7 @@
 #include "CBreakableProp.h"
 
 namespace
-TemplatePlugin
+Template
 {
     enum DynamicContinuousContactBehavior_t : byte
     {

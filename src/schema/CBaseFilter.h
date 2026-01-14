@@ -7,7 +7,7 @@
 #include "globaltypes.h"
 
 namespace
-TemplatePlugin
+Template
 {
     class CBaseFilter : public CBaseEntity
     {

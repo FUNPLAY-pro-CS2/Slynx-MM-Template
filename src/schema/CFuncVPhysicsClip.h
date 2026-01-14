@@ -6,7 +6,7 @@
 #include "globaltypes.h"
 
 namespace
-TemplatePlugin
+Template
 {
     class CFuncVPhysicsClip : public CBaseModelEntity
     {

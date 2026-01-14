@@ -8,7 +8,7 @@
 #include <Shared.h>
 
 namespace
-TemplatePlugin
+Template
 {
     CAttackerInfo::CAttackerInfo(CEntityInstance* attacker)
     {

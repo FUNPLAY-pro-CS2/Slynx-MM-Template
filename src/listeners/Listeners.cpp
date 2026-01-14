@@ -16,7 +16,7 @@ class GameSessionConfiguration_t
 {
 };
 
-namespace TemplatePlugin::Listeners {
+namespace Template::Listeners {
     SourceHooks sourceHooks;
 
     SH_DECL_HOOK3_void(IServerGameDLL, GameFrame, SH_NOATTRIB, 0, bool, bool, bool);

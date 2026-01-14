@@ -8,7 +8,7 @@
 #include "schema/CCSPlayerController.h"
 #include "log.h"
 
-namespace TemplatePlugin::Prints
+namespace Template::Prints
 {
     enum class HudDestination : int
      {

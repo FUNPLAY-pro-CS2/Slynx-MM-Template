@@ -7,7 +7,7 @@
 #include "CGameRules.h"
 #include "schemasystem.h"
 
-namespace TemplatePlugin {
+namespace Template {
     class CC4
     {
     public:

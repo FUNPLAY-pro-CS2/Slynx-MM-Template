@@ -5,7 +5,7 @@
 #include "Events.h"
 #include <detours.h>
 
-namespace TemplatePlugin::Events
+namespace Template::Events
 {
     void InitEvents()
     {

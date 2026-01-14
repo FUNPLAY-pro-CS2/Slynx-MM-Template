@@ -6,7 +6,7 @@
 #include "ehandle.h"
 #include "CCSPlayerPawn.h"
 
-namespace TemplatePlugin
+namespace Template
 {
     enum class PlayerConnectedState : uint32_t
     {

@@ -6,7 +6,7 @@
 #include "CBaseModelEntity.h"
 #include "globaltypes.h"
 
-namespace TemplatePlugin {
+namespace Template {
     class CPlantedC4 : public CBaseModelEntity
     {
     public:

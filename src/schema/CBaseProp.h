@@ -8,7 +8,7 @@
 #include "CBaseAnimGraph.h"
 
 namespace
-TemplatePlugin
+Template
 {
     class CBaseProp : public CBaseAnimGraph
     {

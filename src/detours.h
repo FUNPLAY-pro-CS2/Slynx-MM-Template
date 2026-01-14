@@ -11,7 +11,7 @@
 #include <convar.h>
 #include <features.h>
 #include <ISmmPlugin.h>
-#include <TemplatePlugin.h>
+#include <Template.h>
 #include <funchook/include/funchook.h>
 #include <type_traits>
 #include "detourtypes.h"
@@ -19,7 +19,7 @@
 #include "log.h"
 #include "dynlibutils/module.h"
 
-namespace TemplatePlugin::Detours
+namespace Template::Detours
 {
     struct CommandEntry
     {

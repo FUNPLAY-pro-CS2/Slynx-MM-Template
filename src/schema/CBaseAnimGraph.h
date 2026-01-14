@@ -8,7 +8,7 @@
 #include "CBaseModelEntity.h"
 
 namespace
-TemplatePlugin
+Template
 {
 	class IChoreoServices
     {

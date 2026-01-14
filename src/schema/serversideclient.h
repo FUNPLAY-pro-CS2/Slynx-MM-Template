@@ -23,7 +23,7 @@
 #include <netmessages.pb.h>
 
 namespace
-TemplatePlugin
+Template
 {
     class CHLTVServer;
     class INetMessage;

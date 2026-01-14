@@ -15,7 +15,7 @@
 #include "Shared.h"
 
 namespace
-TemplatePlugin
+Template
 {
     using UTIL_CreateEntityByName_t = CEntityInstance* (*)(const char* /*name*/, int /*forceEdictIndex*/);
     inline UTIL_CreateEntityByName_t g_UTIL_CreateEntityByName = nullptr;

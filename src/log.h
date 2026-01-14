@@ -7,7 +7,7 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
-namespace TemplatePlugin {
+namespace Template {
     class Log {
     public:
         static void Init();
@@ -20,9 +20,9 @@ namespace TemplatePlugin {
     };
 }
 
-#define FP_TRACE(fmt, ...)    ::TemplatePlugin::Log::GetLogger()->trace("- [ " fmt " ] -", ##__VA_ARGS__)
-#define FP_DEBUG(fmt, ...)    ::TemplatePlugin::Log::GetLogger()->debug("- [ " fmt " ] -", ##__VA_ARGS__)
-#define FP_INFO(fmt, ...)     ::TemplatePlugin::Log::GetLogger()->info("- [ " fmt " ] -", ##__VA_ARGS__)
-#define FP_WARN(fmt, ...)     ::TemplatePlugin::Log::GetLogger()->warn("- [ " fmt " ] -", ##__VA_ARGS__)
-#define FP_ERROR(fmt, ...)    ::TemplatePlugin::Log::GetLogger()->error("- [ " fmt " ] -", ##__VA_ARGS__)
-#define FP_CRITICAL(fmt, ...) ::TemplatePlugin::Log::GetLogger()->critical("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_TRACE(fmt, ...)    ::Template::Log::GetLogger()->trace("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_DEBUG(fmt, ...)    ::Template::Log::GetLogger()->debug("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_INFO(fmt, ...)     ::Template::Log::GetLogger()->info("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_WARN(fmt, ...)     ::Template::Log::GetLogger()->warn("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_ERROR(fmt, ...)    ::Template::Log::GetLogger()->error("- [ " fmt " ] -", ##__VA_ARGS__)
+#define FP_CRITICAL(fmt, ...) ::Template::Log::GetLogger()->critical("- [ " fmt " ] -", ##__VA_ARGS__)

@@ -8,7 +8,7 @@
 #include "CBreakableProp.h"
 
 namespace
-TemplatePlugin
+Template
 {
     enum AnimLoopMode_t : uint
     {

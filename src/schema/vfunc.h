@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-namespace TemplatePlugin
+namespace Template
 {
     template <typename T, typename... Args>
     inline T CallVFunc(void* base, int index, Args... args)

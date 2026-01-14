@@ -4,9 +4,9 @@
 //
 #include "gameconfig.h"
 #include <fstream>
-#include <TemplatePlugin.h>
+#include <Template.h>
 
-namespace TemplatePlugin
+namespace Template
 {
     CGameConfig::CGameConfig(const std::string& path) { m_sPath = path; }
 

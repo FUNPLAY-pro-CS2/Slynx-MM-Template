@@ -5,7 +5,7 @@
 #pragma once
 #include "detourtypes.h"
 
-namespace TemplatePlugin::Hooks
+namespace Template::Hooks
 {
     void InitHooks();
 }

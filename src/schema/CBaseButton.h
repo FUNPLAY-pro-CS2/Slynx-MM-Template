@@ -7,7 +7,7 @@
 #include "globaltypes.h"
 
 namespace
-TemplatePlugin
+Template
 {
     class locksound_t
     {

@@ -1,4 +1,4 @@
-#include "TemplatePlugin.h"
+#include "Template.h"
 #include "path.h"
 #include "Shared.h"
 #include "dynlibutils/module.h"
@@ -29,23 +29,23 @@
 #define VERSION_STRING SEMVER " @ " GITHUB_SHA
 #define BUILD_TIMESTAMP __DATE__ " " __TIME__
 
-PLUGIN_EXPOSE(Template, TemplatePlugin::g_iPlugin);
+PLUGIN_EXPOSE(Template, Template::g_iPlugin);
 
 CGameEntitySystem* GameEntitySystem()
 {
     return *reinterpret_cast<CGameEntitySystem**>((uintptr_t)(g_pGameResourceServiceServer) +
-        TemplatePlugin::shared::g_pGameConfig->GetOffset("GameEntitySystem"));
+        Template::shared::g_pGameConfig->GetOffset("GameEntitySystem"));
 }
 
 class GameSessionConfiguration_t
 {
 };
 
-namespace TemplatePlugin
+namespace Template
 {
-    ITemplatePlugin g_iPlugin;
+    ITemplate g_iPlugin;
 
-    bool ITemplatePlugin::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
+    bool ITemplate::Load(PluginId id, ISmmAPI* ismm, char* error, size_t maxlen, bool late)
     {
         PLUGIN_SAVEVARS();
 
@@ -73,7 +73,9 @@ namespace TemplatePlugin
         if (!shared::g_pGameResourceServiceServer)
             return false;
 
+        Log::Init();
         Tasks::Init();
+
         auto gamedata_path = std::string(Paths::GetRootDirectory() + "/gamedata.json");
         shared::g_pGameConfig = new CGameConfig(gamedata_path);
         char conf_error[255] = "";
@@ -109,7 +111,7 @@ namespace TemplatePlugin
         return true;
     }
 
-    bool ITemplatePlugin::Unload(char* error, size_t maxlen)
+    bool ITemplate::Unload(char* error, size_t maxlen)
     {
         Listeners::DestructListeners();
         Detours::ShutdownHooks();
@@ -119,15 +121,17 @@ namespace TemplatePlugin
 
         FP_INFO("<<< Unload() success! >>>");
 
+        Log::Close();
+
         return true;
     }
 
-    const char* ITemplatePlugin::GetAuthor() { return "Slynx"; }
-    const char* ITemplatePlugin::GetName() { return "TemplatePlugin"; }
-    const char* ITemplatePlugin::GetDescription() { return "TemplatePlugin Metamod plugin for CS2 servers."; }
-    const char* ITemplatePlugin::GetURL() { return "https://slynxdev.cz"; }
-    const char* ITemplatePlugin::GetLicense() { return "GPLv3"; }
-    const char* ITemplatePlugin::GetVersion() { return VERSION_STRING; }
-    const char* ITemplatePlugin::GetDate() { return BUILD_TIMESTAMP; }
-    const char* ITemplatePlugin::GetLogTag() { return "TemplatePlugin"; }
+    const char* ITemplate::GetAuthor() { return "Slynx"; }
+    const char* ITemplate::GetName() { return "Template"; }
+    const char* ITemplate::GetDescription() { return "Template Metamod plugin for CS2 servers."; }
+    const char* ITemplate::GetURL() { return "https://slynxdev.cz"; }
+    const char* ITemplate::GetLicense() { return "GPLv3"; }
+    const char* ITemplate::GetVersion() { return VERSION_STRING; }
+    const char* ITemplate::GetDate() { return BUILD_TIMESTAMP; }
+    const char* ITemplate::GetLogTag() { return "Template"; }
 }

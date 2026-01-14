@@ -11,7 +11,7 @@
 #include "cmodel.h"
 #include "schema/CBaseEntity.h"
 
-namespace TemplatePlugin::RayTrace
+namespace Template::RayTrace
 {
     enum class InteractionLayers : uint64_t
     {

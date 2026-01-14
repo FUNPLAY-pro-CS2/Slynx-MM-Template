@@ -9,7 +9,7 @@
 
 #define SF_TRIG_PUSH_ONCE 0x80
 
-namespace TemplatePlugin {
+namespace Template {
     class CTriggerPush : public CBaseTrigger
     {
     public:

@@ -11,11 +11,11 @@
 #include "detours.h"
 
 #include <Shared.h>
-#include <TemplatePlugin.h>
+#include <Template.h>
 
 #include "log.h"
 
-namespace TemplatePlugin {
+namespace Template {
     SH_DECL_HOOK2(IGameEventManager2, FireEvent, SH_NOATTRIB, 0, bool, IGameEvent*, bool);
     SH_DECL_HOOK3_void(ICvar, DispatchConCommand, SH_NOATTRIB, 0, ConCommandRef, const CCommandContext&,
                        const CCommand&);

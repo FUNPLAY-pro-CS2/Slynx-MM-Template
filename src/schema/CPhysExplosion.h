@@ -6,7 +6,7 @@
 #include "CBaseEntity.h"
 #include "globaltypes.h"
 
-namespace TemplatePlugin
+namespace Template
 {
     class CPhysExplosion : public CBaseEntity
     {

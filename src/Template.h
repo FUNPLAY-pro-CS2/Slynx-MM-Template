@@ -5,9 +5,9 @@
 #include <ISmmPlugin.h>
 #include "entitysystem.h"
 
-namespace TemplatePlugin
+namespace Template
 {
-    class ITemplatePlugin : public ISmmPlugin, public IMetamodListener
+    class ITemplate : public ISmmPlugin, public IMetamodListener
     {
     public:
         bool Load(PluginId id, ISmmAPI *ismm, char *error, size_t maxlen, bool late) override;
@@ -22,7 +22,7 @@ namespace TemplatePlugin
         const char *GetLogTag() override;
     };
 
-    extern ITemplatePlugin g_iPlugin;
+    extern ITemplate g_iPlugin;
 }
 
 #endif //_INCLUDE_METAMOD_SOURCE_STUB_PLUGIN_H_

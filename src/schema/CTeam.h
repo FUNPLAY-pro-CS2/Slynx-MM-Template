@@ -5,7 +5,7 @@
 #pragma once
 #include "CBaseEntity.h"
 
-namespace TemplatePlugin {
+namespace Template {
     class CTeam : public CBaseEntity
     {
     public:

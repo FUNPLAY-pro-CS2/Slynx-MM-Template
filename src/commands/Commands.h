@@ -5,7 +5,7 @@
 #pragma once
 #include "detourtypes.h"
 
-namespace TemplatePlugin::Commands
+namespace Template::Commands
 {
     void InitCommands();
 }

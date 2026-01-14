@@ -13,7 +13,7 @@
 #include "Shared.h"
 #include "RayTrace.h"
 
-namespace TemplatePlugin {
+namespace Template {
     extern CServerSideClient* GetClientBySlot(CPlayerSlot slot);
 
     class CCSPlayerController : public CBasePlayerController

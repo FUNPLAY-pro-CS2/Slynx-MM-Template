@@ -7,7 +7,7 @@
 #include <sourcehook.h>
 #include <iserver.h>
 
-namespace TemplatePlugin::Listeners {
+namespace Template::Listeners {
     void InitListeners();
 
     void DestructListeners();

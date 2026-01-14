@@ -5,7 +5,7 @@
 #pragma once
 #include "detourtypes.h"
 
-namespace TemplatePlugin::Events
+namespace Template::Events
 {
     void InitEvents();
 }

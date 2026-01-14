@@ -6,7 +6,7 @@
 #include <cmath>
 #include <chrono>
 
-namespace TemplatePlugin {
+namespace Template {
     struct colors {
         float r, g, b, a;
 

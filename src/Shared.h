@@ -15,7 +15,7 @@
 
 class CGameEntitySystem;
 
-namespace TemplatePlugin::shared
+namespace Template::shared
 {
     extern ICvar* g_pCVar;
     extern IServerGameDLL* g_pServer;
@@ -50,6 +50,6 @@ namespace TemplatePlugin::shared
 }
 
 #undef SH_GLOB_SHPTR
-#define SH_GLOB_SHPTR TemplatePlugin::shared::source_hook
+#define SH_GLOB_SHPTR Template::shared::source_hook
 #undef SH_GLOB_PLUGPTR
-#define SH_GLOB_PLUGPTR TemplatePlugin::shared::source_hook_pluginid
+#define SH_GLOB_PLUGPTR Template::shared::source_hook_pluginid

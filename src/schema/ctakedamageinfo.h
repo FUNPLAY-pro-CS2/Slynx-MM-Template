@@ -9,7 +9,7 @@
 #include "globaltypes.h"
 
 namespace
-TemplatePlugin
+Template
 {
 	class CBaseEntity;
     class CTakeDamageInfo;

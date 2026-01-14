@@ -5,7 +5,7 @@
 #pragma once
 #include "CBaseEntity.h"
 
-namespace TemplatePlugin {
+namespace Template {
     class CSoundEventEntity : public CBaseEntity {
     public:
         DECLARE_SCHEMA_CLASS(CSoundEventEntity)

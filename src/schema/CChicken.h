@@ -5,7 +5,7 @@
 #pragma once
 #include "CBaseEntity.h"
 
-namespace TemplatePlugin {
+namespace Template {
     enum class ChickenActivity : uint32_t {
         IDLE = 0x0,
         SQUAT = 0x1,

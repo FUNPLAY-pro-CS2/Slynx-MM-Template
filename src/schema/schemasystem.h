@@ -39,7 +39,7 @@
 #undef schema
 
 namespace
-TemplatePlugin
+Template
 {
     struct SchemaKey
     {

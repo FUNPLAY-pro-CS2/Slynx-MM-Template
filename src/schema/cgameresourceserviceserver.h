@@ -19,7 +19,7 @@
 
 #pragma once
 #include <cstdint>
-#include "TemplatePlugin.h"
+#include "Template.h"
 
 class CGameEntitySystem;
 

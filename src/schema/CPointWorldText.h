@@ -21,7 +21,7 @@
 
 #include "CBaseModelEntity.h"
 
-namespace TemplatePlugin {
+namespace Template {
     enum class PointWorldTextJustifyHorizontal_t : uint32_t
     {
         POINT_WORLD_TEXT_JUSTIFY_HORIZONTAL_LEFT = 0x0,

@@ -9,7 +9,7 @@
 #include <convar.h>
 #include <string>
 
-namespace TemplatePlugin
+namespace Template
 {
     class CBaseEntity;
     class CTakeDamageInfo;

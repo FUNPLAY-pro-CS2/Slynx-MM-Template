@@ -7,7 +7,7 @@
 #include "CBaseModelEntity.h"
 #include "services.h"
 
-namespace TemplatePlugin {
+namespace Template {
     enum class Hull_t : uint32
     {
         HULL_HUMAN = 0,
